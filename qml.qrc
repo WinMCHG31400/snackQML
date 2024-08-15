@@ -1,0 +1,18 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+    </qresource>
+    <qresource prefix="/images">
+        <file>images/back.png</file>
+        <file>images/food.png</file>
+        <file>images/snack_body1.png</file>
+        <file>images/snack_body2.png</file>
+        <file>images/snack_hear.png</file>
+        <file>images/icon.png</file>
+        <file>images/button.png</file>
+        <file>images/show_false.png</file>
+        <file>images/show_true.png</file>
+        <file>images/food_speed.png</file>
+        <file>images/food_throuth.png</file>
+    </qresource>
+</RCC>
