@@ -14,5 +14,13 @@
         <file>images/show_true.png</file>
         <file>images/food_speed.png</file>
         <file>images/food_throuth.png</file>
+        <file>images/pause.png</file>
+        <file>images/pause_ic.png</file>
+        <file>images/_pause_bu.png</file>
+        <file>images/pause_bu.png</file>
+        <file>images/food_high.png</file>
+        <file>images/food_s&amp;t.png</file>
+        <file>images/food_speed_big.png</file>
+        <file>images/food_throuth_big.png</file>
     </qresource>
 </RCC>

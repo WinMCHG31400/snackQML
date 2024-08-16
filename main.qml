@@ -7,6 +7,9 @@ ApplicationWindow {
     property bool isShow:false
     property bool isThro:false
     property int im_type
+    property bool control:false
+    property bool pause:false
+    property int addcent:0
     visible: true
     width: 800
     height: 600
@@ -39,10 +42,24 @@ ApplicationWindow {
                     }
                 }
         Timer{
+            property int t:0
+            property int tt
+            id:timer3
+            interval: 10
+            repeat: true
+            running:true
+            onTriggered:{
+                t+=1
+                tt=t/100
+                time_text.text=tt+"s"
+            }
+        }
+
+        Timer{
             property int c:0
             property int x0
             property int y0
-            property var im
+            property var im            
             id: timer2;
             interval: 200;
             repeat: true;
@@ -51,15 +68,37 @@ ApplicationWindow {
                 if(snack.cent==timer2.c)
                 {
                     var lxj=Math.random()
-                    if(lxj>0.9)
+                    if(lxj>0.85)
                     {
                         im_type=1
                         var image =im= Qt.createQmlObject("import QtQuick 2.14; Image { z:0; source: 'qrc:/images/images/food_speed.png'; width: 20; height: 20}", item);
                     }
                     else if(lxj>0.8)
                     {
+                        im_type=10
+                        var image =im= Qt.createQmlObject("import QtQuick 2.14; Image { z:0; source: 'qrc:/images/images/food_speed_big.png'; width: 20; height: 20}", item);
+                    }
+                    else if(lxj>0.7)
+                    {
                         im_type=2
                         var image =im= Qt.createQmlObject("import QtQuick 2.14; Image { z:0; source: 'qrc:/images/images/food_throuth.png'; width: 20; height: 20}", item);
+                    }
+                    else if(lxj>0.87)
+                    {
+                        im_type=20
+                        var image =im= Qt.createQmlObject("import QtQuick 2.14; Image { z:0; source: 'qrc:/images/images/food_throuth_big.png'; width: 20; height: 20}", item);
+                    }
+                    else if(lxj>0.75)
+                    {
+                        im_type=3
+                        var image =im= Qt.createQmlObject("import QtQuick 2.14; Image { z:0; source: 'qrc:/images/images/food_high.png'; width: 20; height: 20}", item);
+
+                    }
+                    else if(lxj>0.73)
+                    {
+                        im_type=4
+                        var image =im= Qt.createQmlObject("import QtQuick 2.14; Image { z:0; source: 'qrc:/images/images/food_s&t.png'; width: 20; height: 20}", item);
+
                     }
                     else
                     {
@@ -77,7 +116,8 @@ ApplicationWindow {
                 }
             }
         }
-        Rectangle {
+
+        Rectangle {//显示分数
             id:cent_text
             z:10
             x:820
@@ -91,14 +131,31 @@ ApplicationWindow {
                 anchors.centerIn: parent
                 font.pixelSize: 30
                 font.bold: true
-                text: qsTr(""+snack.cent)
+                text: qsTr(""+(snack.cent+addcent))
             }
         }
-        Rectangle {
-            id:speed_text
+        Rectangle {//显示时间
+            id:time_
             z:10
             x:810
             y:60
+            width: 80
+            height: 40
+            color: "#FFFF00"
+            opacity: 0.5
+            Text {
+                id: time_text
+                anchors.centerIn: parent
+                font.pixelSize: 30
+                font.bold: true
+                text: qsTr("0s")
+            }
+        }
+        Rectangle {//显示加速状态
+            id:speed_text
+            z:10
+            x:810
+            y:110
             width: 80
             height: 40
             color: "#00FFFF"
@@ -111,11 +168,11 @@ ApplicationWindow {
                 text: qsTr(timer.fast+"0ms")
             }
         }
-        Rectangle {
+        Rectangle {//显示穿过状态
             id:throuth_text
             z:10
             x:810
-            y:110
+            y:160
             width: 80
             height: 40
             color: "#B200FF"
@@ -128,11 +185,11 @@ ApplicationWindow {
                 text: qsTr(timer.throuth+"0ms")
             }
         }
-        Rectangle {
+        Rectangle {//显示穿过状态
             id:bu_through
             z:10
             x:800
-            y:160
+            y:210
             width: 100
             height: 40
             color: "#FFFFFF"
@@ -146,20 +203,99 @@ ApplicationWindow {
                 MouseArea{
                     anchors.fill: parent;
                     onClicked: {
-                        if(isThro)
+                        if(control)
                         {
-                            bu_through_bu.text="不允许穿过自身"
-                            isThro=false
-                        }
-                        else
-                        {
-                            bu_through_bu.text="允许穿过自身"
-                            isThro=true
+                            if(isThro)
+                            {
+                                bu_through_bu.text="不允许穿过自身"
+                                timer.throuth=0
+                                isThro=false
+                            }
+                            else
+                            {
+                                bu_through_bu.text="允许穿过自身"
+                                throuth_text.visible=true
+                                timer.throuth=2147483647
+                                isThro=true
+                            }
                         }
                     }
                 }
             }
-
+        }
+        Rectangle{
+            id:control__bu
+            x:800
+            y:260
+            z:10
+            width: 100
+            height: 40
+            color: "#FFFFFF"
+            opacity: 0.5
+            Text {
+                id:bu_control__bu
+                anchors.centerIn: parent
+                font.pixelSize: 14
+                font.bold: true
+                text: qsTr("不显示控制按钮")
+                MouseArea{
+                    anchors.fill: parent;
+                    onClicked: {
+                            if(control_bu.visible)
+                            {
+                                bu_control__bu.text="不显示控制按钮"
+                                control_bu.visible=false
+                            }
+                            else
+                            {
+                                bu_control__bu.text="显示控制按钮"
+                                control_bu.visible=true
+                            }
+                    }
+                }
+            }
+        }
+        Image {//暂停按钮
+            id: pause_i
+            visible: false
+            x:0
+            y:0
+            source: "qrc:/images/images/pause.png"
+            Image {
+                id: pause_ic
+                x:300
+                y:200
+                source: "qrc:/images/images/pause_ic.png"
+            }
+        }
+        Image {
+            id: pause_
+            x:820
+            y:550
+            source: "qrc:/images/images/pause_bu.png"
+            MouseArea{
+                anchors.fill: parent;
+                onClicked: {
+                    if(pause)
+                    {
+                        pause=false
+                        pause_.source="qrc:/images/images/pause_bu.png"
+                        pause_i.visible=false
+                        timer.running=true
+                        timer2.running=true
+                        timer3.running=true
+                    }
+                    else
+                    {
+                        pause=true
+                        pause_.source="qrc:/images/images/_pause_bu.png"
+                        pause_i.visible=true
+                        timer.running=false
+                        timer2.running=false
+                        timer3.running=false
+                    }
+                }
+            }
         }
         Image{
             id:sho                      //显示面板
@@ -187,73 +323,77 @@ ApplicationWindow {
                 }
             }
         }
-        Image{
-            id:up
-            x:805
-            y:220
-            z:10
-            width: 30
-            height:30
-            source:"qrc:/images/images/button.png"
-            MouseArea{
-                anchors.fill: parent;
-                onPressed:
-                    snack.w=1
-                onReleased:
-                    snack.w=0
+        Item{//控制按钮
+            id:control_bu
+            visible: false
+            z:2147483647
+            opacity:0.6
+            Image{
+                id:up
+                x:100
+                y:480
+                width:30
+                height:30
+                source:"qrc:/images/images/button.png"
+                MouseArea{
+                    anchors.fill: parent;
+                    onPressed:
+                        snack.w=1
+                    onReleased:
+                        snack.w=0
+                }
+            }
+            Image{
+                id:left
+                x:40
+                y:540
+                width: 30
+                height:30
+                rotation: 270
+                source:"qrc:/images/images/button.png"
+                MouseArea{
+                    anchors.fill: parent;
+                    onPressed:
+                        snack.a=1
+                    onReleased:
+                        snack.a=0
+                }
+            }
+            Image{
+                id:down
+                x:100
+                y:540
+                width: 30
+                height:30
+                rotation: 180
+                source:"qrc:/images/images/button.png"
+                MouseArea{
+                    anchors.fill: parent;
+                    onPressed:
+                        snack.s=1
+                    onReleased:
+                        snack.s=0
+                }
+            }
+            Image{
+                id:right
+                x:160
+                y:540
+                z:10
+                width: 30
+                height:30
+                rotation: 90
+                source:"qrc:/images/images/button.png"
+                MouseArea{
+                    anchors.fill: parent;
+                    onPressed:
+                        snack.d=1
+                    onReleased:
+                        snack.d=0
+                }
             }
         }
-        Image{
-            id:left
-            x:805
-            y:260
-            z:10
-            width: 30
-            height:30
-            rotation: 270
-            source:"qrc:/images/images/button.png"
-            MouseArea{
-                anchors.fill: parent;
-                onPressed:
-                    snack.a=1
-                onReleased:
-                    snack.a=0
-            }
-        }
-        Image{
-            id:down
-            x:805
-            y:300
-            z:10
-            width: 30
-            height:30
-            rotation: 180
-            source:"qrc:/images/images/button.png"
-            MouseArea{
-                anchors.fill: parent;
-                onPressed:
-                    snack.s=1
-                onReleased:
-                    snack.s=0
-            }
-        }
-        Image{
-            id:right
-            x:805
-            y:340
-            z:10
-            width: 30
-            height:30
-            rotation: 90
-            source:"qrc:/images/images/button.png"
-            MouseArea{
-                anchors.fill: parent;
-                onPressed:
-                    snack.d=1
-                onReleased:
-                    snack.d=0
-            }
-        }
+
 
         Item {
             z:2
@@ -355,7 +495,30 @@ ApplicationWindow {
                             timer.interval=100        
                             speed_text.visible=true
                             break
+                        case 10:
+                            timer.fast+=1800
+                            timer.interval=100
+                            speed_text.visible=true
+                            break
                         case 2:
+                            timer.throuth+=60
+                            isThro=true
+                            bu_through_bu.text="允许穿过自身"
+                            throuth_text.visible=true
+                            break
+                        case 20:
+                            timer.throuth+=600
+                            isThro=true
+                            bu_through_bu.text="允许穿过自身"
+                            throuth_text.visible=true
+                            break
+                        case 3:
+                            addcent+=9
+                            break
+                        case 4:
+                            timer.fast+=180
+                            timer.interval=100
+                            speed_text.visible=true
                             timer.throuth+=60
                             isThro=true
                             bu_through_bu.text="允许穿过自身"
@@ -407,6 +570,29 @@ ApplicationWindow {
                     snack.s=1;
                 else if(event.key==Qt.Key_Right)
                     snack.d=1;
+                else if(event.key==Qt.Key_F12)
+                    control=true
+                else if(event.key==Qt.Key_Space)
+                {
+                    if(pause)
+                    {
+                        pause=false
+                        pause_.source="qrc:/images/images/pause_bu.png"
+                        pause_i.visible=false
+                        timer.running=true
+                        timer2.running=true
+                        timer3.running=true
+                    }
+                    else
+                    {
+                        pause=true
+                        pause_.source="qrc:/images/images/_pause_bu.png"
+                        pause_i.visible=true
+                        timer.running=false
+                        timer2.running=false
+                        timer3.running=false
+                    }
+                }
             }
             Keys.onReleased: {
                 if(event.key==Qt.Key_W)
@@ -426,9 +612,84 @@ ApplicationWindow {
                 else if(event.key==Qt.Key_Right)
                     snack.d=0;
                 else if(event.key==Qt.Key_Escape)
-                    Qt.quit()
+                {
+                    quit.visible=true
+                    pause=true
+                    pause_.source="qrc:/images/images/_pause_bu.png"
+                    pause_i.visible=true
+                    timer.running=false
+                    timer2.running=false
+                    timer3.running=false
+                }
             }
         }
 
+    }
+    Image{
+        id:quit
+        visible: false
+        z:2147483647
+        Image{
+            source: "qrc:/images/images/pause.png"
+        }
+        Rectangle{
+            color: "#E8E8E8"
+            x:270
+            y:260
+            width:260
+            height: 80
+            Rectangle{
+                id:exit
+                x:20
+                y:20
+                z:10
+                width: 100
+                height: 40
+                color: "#FFFFFF"
+                opacity: 0.5
+                Text {
+                    id:exit_t
+                    anchors.centerIn: parent
+                    font.pixelSize: 30
+                    font.bold: true
+                    text: qsTr("退出")
+                    MouseArea{
+                        anchors.fill: parent;
+                        onClicked: {
+                                Qt.quit()
+                        }
+                    }
+                }
+            }
+            Rectangle{
+                id:cans
+                x:140
+                y:20
+                z:10
+                width: 100
+                height: 40
+                color: "#FFFFFF"
+                opacity: 0.5
+                Text {
+                    id:cnas_t
+                    anchors.centerIn: parent
+                    font.pixelSize: 30
+                    font.bold: true
+                    text: qsTr("取消")
+                    MouseArea{
+                        anchors.fill: parent;
+                        onClicked: {
+                            quit.visible=false
+                            pause=false
+                            pause_.source="qrc:/images/images/pause_bu.png"
+                            pause_i.visible=false
+                            timer.running=true
+                            timer2.running=true
+                            timer3.running=true
+                        }
+                    }
+                }
+            }
+        }
     }
 }
