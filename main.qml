@@ -1,6 +1,7 @@
 import QtQuick 2.14
 import QtQuick.Controls 2.14
-//import "qrc:/Snack.qml" as Snack
+import GFile 1.2
+import QtMultimedia
 
 ApplicationWindow {
     id:win
@@ -10,6 +11,10 @@ ApplicationWindow {
     property bool control:false
     property bool pause:false
     property int addcent:0
+    property int maxcent:0
+    property int maxt:0
+    property string filel
+    property bool doud:true
     visible: true
     width: 800
     height: 600
@@ -23,6 +28,25 @@ ApplicationWindow {
     }
     onHeightChanged: {
         win.height=600
+    }
+    GFile{
+        id:file
+    }
+    SoundEffect{
+        id:press_su
+        source: "qrc:/images/raw/click.wav"
+    }
+    SoundEffect{
+        id:move_su
+        source: "qrc:/images/raw/attack.wav"
+    }
+    SoundEffect{
+        id:move_ea
+        source: "qrc:/images/raw/eat.wav"
+    }
+    SoundEffect{
+        id:musi
+        source: "C:/Users/minec/Downloads/114.wav"
     }
     Image{
         id:item
@@ -40,6 +64,24 @@ ApplicationWindow {
                             image.y=j
                         }
                     }
+                    filel="C:/Users/"+file.getUser()+"/AppData/LocalLow/snackQt"
+                    if(file.is(filel+"/data.d"))
+                    {
+                        file.setSource(filel+"/data.d")
+                        maxcent=Number(file.read())
+                        file.setSource(filel+"/data2.d")
+                        maxt=Number(file.read())
+                    }
+                    else
+                    {
+                        file.create(filel)
+                        file.setSource(filel+"/data.d")
+                        file.write("0")
+                        file.setSource(filel+"/data2.d")
+                        file.write("0")
+                    }
+                    m_t.text="最高分："+maxcent
+                    mt_t.text="用时："+Math.floor(maxt/100)+"s"
                 }
         Timer{
             property int t:0
@@ -157,13 +199,13 @@ ApplicationWindow {
             x:810
             y:110
             width: 80
-            height: 40
+            height: 30
             color: "#00FFFF"
             opacity: 0.5
             Text {
                 id: s_t
                 anchors.centerIn: parent
-                font.pixelSize: 20
+                font.pixelSize: 14
                 font.bold: true
                 text: qsTr(timer.fast+"0ms")
             }
@@ -172,15 +214,15 @@ ApplicationWindow {
             id:throuth_text
             z:10
             x:810
-            y:160
+            y:150
             width: 80
-            height: 40
+            height: 30
             color: "#B200FF"
             opacity: 0.5
             Text {
                 id: t_t
                 anchors.centerIn: parent
-                font.pixelSize: 20
+                font.pixelSize: 14
                 font.bold: true
                 text: qsTr(timer.throuth+"0ms")
             }
@@ -189,9 +231,9 @@ ApplicationWindow {
             id:bu_through
             z:10
             x:800
-            y:210
+            y:190
             width: 100
-            height: 40
+            height: 30
             color: "#FFFFFF"
             opacity: 0.5
             Text {
@@ -210,6 +252,7 @@ ApplicationWindow {
                                 bu_through_bu.text="不允许穿过自身"
                                 timer.throuth=0
                                 isThro=false
+                                if(doud) press_su.play()
                             }
                             else
                             {
@@ -217,6 +260,7 @@ ApplicationWindow {
                                 throuth_text.visible=true
                                 timer.throuth=2147483647
                                 isThro=true
+                                if(doud) press_su.play()
                             }
                         }
                     }
@@ -226,10 +270,10 @@ ApplicationWindow {
         Rectangle{
             id:control__bu
             x:800
-            y:260
+            y:230
             z:10
             width: 100
-            height: 40
+            height: 30
             color: "#FFFFFF"
             opacity: 0.5
             Text {
@@ -245,14 +289,115 @@ ApplicationWindow {
                             {
                                 bu_control__bu.text="不显示控制按钮"
                                 control_bu.visible=false
+                                if(doud) press_su.play()
                             }
                             else
                             {
                                 bu_control__bu.text="显示控制按钮"
                                 control_bu.visible=true
+                                if(doud) press_su.play()
                             }
                     }
                 }
+            }
+        }
+        Rectangle{
+            id:soude_bu
+            x:800
+            y:270
+            z:10
+            width: 100
+            height: 30
+            color: "#FFFFFF"
+            opacity: 0.5
+            Text {
+                id:bu_soude__bu
+                anchors.centerIn: parent
+                font.pixelSize: 14
+                font.bold: true
+                text: qsTr("开启音效")
+                MouseArea{
+                    anchors.fill: parent;
+                    onClicked: {
+                            if(doud)
+                            {
+                                bu_soude__bu.text="关闭音效"
+                                doud=false
+                            }
+                            else
+                            {
+                                bu_soude__bu.text="开启音效"
+                                doud=true
+                                press_su.play()
+                            }
+                    }
+                }
+            }
+        }
+        // Rectangle{
+        //     id:music_bu
+        //     x:800
+        //     y:310
+        //     z:10
+        //     width: 100
+        //     height: 30
+        //     color: "#FFFFFF"
+        //     opacity: 0.5
+        //     Text {
+        //         id:bu_music__bu
+        //         anchors.centerIn: parent
+        //         font.pixelSize: 14
+        //         font.bold: true
+        //         text: qsTr("播放音乐")
+        //         MouseArea{
+        //             anchors.fill: parent;
+        //             onClicked: {
+        //                     if(bu_music__bu.text=="播放音乐")
+        //                     {
+        //                         bu_music__bu.text="暂停音乐"
+        //                         musi.play()
+        //                     }
+        //                     else
+        //                     {
+        //                         bu_music__bu.text="播放音乐"
+        //                         musi.pause()
+        //                     }
+        //             }
+        //         }
+        //     }
+        // }
+        Rectangle {//显示最高分
+            id:maxcent_text
+            z:10
+            x:810
+            y:470
+            width: 80
+            height: 30
+            color: "#FF0000"
+            opacity: 0.5
+            Text {
+                id: m_t
+                anchors.centerIn: parent
+                font.pixelSize: 14
+                font.bold: true
+                text: qsTr("最高分："+maxcent)
+            }
+        }
+        Rectangle {//显示最高分用时
+            id:maxcentt_text
+            z:10
+            x:810
+            y:500
+            width: 80
+            height: 20
+            color: "#FF0000"
+            opacity: 0.5
+            Text {
+                id: mt_t
+                anchors.centerIn: parent
+                font.pixelSize: 14
+                font.bold: true
+                text: qsTr("用时："+Math.floor(maxt/100)+"s")
             }
         }
         Image {//暂停按钮
@@ -284,6 +429,7 @@ ApplicationWindow {
                         timer.running=true
                         timer2.running=true
                         timer3.running=true
+                        if(doud) press_su.play()
                     }
                     else
                     {
@@ -293,12 +439,13 @@ ApplicationWindow {
                         timer.running=false
                         timer2.running=false
                         timer3.running=false
+                        if(doud) press_su.play()
                     }
                 }
             }
         }
-        Image{
-            id:sho                      //显示面板
+        Image{//显示面板
+            id:sho
             x:740
             y:570
             z:10
@@ -313,12 +460,14 @@ ApplicationWindow {
                         isShow=true
                         win.width=900
                         sho.source="qrc:/images/images/show_true.png"
+                        if(doud) press_su.play()
                     }
                     else
                     {
                         isShow=false
                         win.width=800
                         sho.source="qrc:/images/images/show_false.png"
+                        if(doud) press_su.play()
                     }
                 }
             }
@@ -459,6 +608,7 @@ ApplicationWindow {
                         if(hear.y>0 && (isThro? true:(!isp(hear.x,hear.y-20)))){
                             hear.y-=20
                             body_move(hear.x,hear.y+20,270)
+                            if(doud) move_su.play()
                         }
                         hear.rotation=270
                     }
@@ -467,6 +617,7 @@ ApplicationWindow {
                         if(hear.x>0 && (isThro? true:(!isp(hear.x-20,hear.y)))){
                             hear.x-=20
                             body_move(hear.x+20,hear.y,180)
+                            if(doud) move_su.play()
                         }
                         hear.rotation=180
                     }
@@ -475,6 +626,7 @@ ApplicationWindow {
                         if(hear.y<580 && (isThro? true:(!isp(hear.x,hear.y+20)))){
                             hear.y+=20
                             body_move(hear.x,hear.y-20,90)
+                            if(doud) move_su.play()
                         }
                         hear.rotation=90
                     }
@@ -483,11 +635,13 @@ ApplicationWindow {
                         if(hear.x<780 && (isThro? true:(!isp(hear.x+20,hear.y)))){
                             hear.x+=20
                             body_move(hear.x-20,hear.y,0)
+                            if(doud) move_su.play()
                         }
                         hear.rotation=0
                     }
                     if(hear.x==timer2.x0 && hear.y==timer2.y0)//吃到食物
                     {
+                        if(doud) move_ea.play()
                         switch(im_type)
                         {
                         case 1:
@@ -540,6 +694,15 @@ ApplicationWindow {
                         image.rotation=aa.rotation
                         image.x=aa.x+(-Math.cos(re)*20)
                         image.y=aa.y+(-Math.sin(re)*20)
+                        if((snack.cent+addcent)>maxcent)
+                        {
+                            file.setSource(filel+"/data.d")
+                            file.write(snack.cent+addcent)
+                            m_t.text="最高分："+(snack.cent+addcent)
+                            file.setSource(filel+"/data2.d")
+                            file.write(timer3.t)
+                            mt_t.text="用时："+Math.floor(timer3.t/100)+"s"
+                        }
                     }
                 }
             }
@@ -582,6 +745,7 @@ ApplicationWindow {
                         timer.running=true
                         timer2.running=true
                         timer3.running=true
+                        if(doud) press_su.play()
                     }
                     else
                     {
@@ -591,6 +755,7 @@ ApplicationWindow {
                         timer.running=false
                         timer2.running=false
                         timer3.running=false
+                        if(doud) press_su.play()
                     }
                 }
             }
@@ -620,6 +785,53 @@ ApplicationWindow {
                     timer.running=false
                     timer2.running=false
                     timer3.running=false
+                    if(doud) press_su.play()
+                }
+                else if(event.key==Qt.Key_F1 &&control)
+                {
+                    if(timer.fast>0)
+                    {
+                        timer.interval=200
+                        timer.fast=0
+                    }
+                    else
+                    {
+                        timer.interval=100
+                        timer.fast=2147483647
+                        speed_text.visible=true
+                    }
+                    if(doud) press_su.play()
+                }
+                else if(event.key==Qt.Key_F2 &&control)
+                {
+                    if(timer.throuth>0)
+                    {
+                        isThro=false
+                        timer.throuth=0
+                    }
+                    else
+                    {
+                        isThro=true
+                        timer.throuth=2147483647
+                        throuth_text.visible=true
+                    }
+                    if(doud) press_su.play()
+                }
+                else if(event.key==Qt.Key_Tab)
+                {
+                    if(isShow)
+                    {
+                        isShow=false
+                        win.width=800
+                        sho.source="qrc:/images/images/show_false.png"
+                    }
+                    else
+                    {
+                        isShow=true
+                        win.width=900
+                        sho.source="qrc:/images/images/show_true.png"
+                    }
+                    if(doud) press_su.play()
                 }
             }
         }
@@ -686,6 +898,7 @@ ApplicationWindow {
                             timer.running=true
                             timer2.running=true
                             timer3.running=true
+                            if(doud) press_su.play()
                         }
                     }
                 }

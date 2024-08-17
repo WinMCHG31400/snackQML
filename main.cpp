@@ -1,7 +1,7 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QIcon>
-
+#include<gfile.h>
 int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -9,6 +9,9 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
     QQmlApplicationEngine engine;
+
+    qmlRegisterType<GFile>("GFile",1,2,"GFile");
+
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     app.setWindowIcon(QIcon(":/images/images/icon.png"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,

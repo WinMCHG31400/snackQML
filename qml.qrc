@@ -22,5 +22,8 @@
         <file>images/food_s&amp;t.png</file>
         <file>images/food_speed_big.png</file>
         <file>images/food_throuth_big.png</file>
+        <file>raw/attack.wav</file>
+        <file>raw/click.wav</file>
+        <file>raw/eat.wav</file>
     </qresource>
 </RCC>
