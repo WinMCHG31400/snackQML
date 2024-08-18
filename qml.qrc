@@ -25,5 +25,6 @@
         <file>raw/attack.wav</file>
         <file>raw/click.wav</file>
         <file>raw/eat.wav</file>
+        <file>images/forr.png</file>
     </qresource>
 </RCC>

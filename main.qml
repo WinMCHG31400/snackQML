@@ -15,6 +15,13 @@ ApplicationWindow {
     property int maxt:0
     property string filel
     property bool doud:true
+    property var impa
+    property real lxj_s:0.85
+    property real lxj_ss:0.8
+    property real lxj_t:0.7
+    property real lxj_tt:0.67
+    property real lxj_h:0.6
+    property real lxj_st:0.55
     visible: true
     width: 800
     height: 600
@@ -55,9 +62,10 @@ ApplicationWindow {
         width: 800
         height: 600
         Component.onCompleted: {
-                    for(var i=0;i<800;i+=20)
+            var i,j
+                    for(i=0;i<800;i+=20)
                     {
-                        for(var j=0;j<600;j+=20)
+                        for(j=0;j<600;j+=20)
                         {
                             var image = Qt.createQmlObject("import QtQuick 2.14; Image { z:-1; source: 'qrc:/images/images/back.png'; width: 20; height: 20}", item);
                             image.x=i
@@ -96,12 +104,11 @@ ApplicationWindow {
                 time_text.text=tt+"s"
             }
         }
-
         Timer{
             property int c:0
             property int x0
             property int y0
-            property var im            
+            property var im
             id: timer2;
             interval: 200;
             repeat: true;
@@ -110,64 +117,66 @@ ApplicationWindow {
                 if(snack.cent==timer2.c)
                 {
                     var lxj=Math.random()
-                    if(lxj>0.85)
+                    if(lxj>lxj_s)
                     {
                         im_type=1
-                        var image =im= Qt.createQmlObject("import QtQuick 2.14; Image { z:0; source: 'qrc:/images/images/food_speed.png'; width: 20; height: 20}", item);
+                        var image =im= Qt.createQmlObject("import QtQuick 2.14; Image { z:2147483647; source: 'qrc:/images/images/food_speed.png'; width: 20; height: 20}", item);
                     }
-                    else if(lxj>0.8)
+                    else if(lxj>lxj_ss)
                     {
                         im_type=10
-                        var image =im= Qt.createQmlObject("import QtQuick 2.14; Image { z:0; source: 'qrc:/images/images/food_speed_big.png'; width: 20; height: 20}", item);
+                        var image =im= Qt.createQmlObject("import QtQuick 2.14; Image { z:2147483647; source: 'qrc:/images/images/food_speed_big.png'; width: 20; height: 20}", item);
                     }
-                    else if(lxj>0.7)
+                    else if(lxj>lxj_t)
                     {
                         im_type=2
-                        var image =im= Qt.createQmlObject("import QtQuick 2.14; Image { z:0; source: 'qrc:/images/images/food_throuth.png'; width: 20; height: 20}", item);
+                        var image =im= Qt.createQmlObject("import QtQuick 2.14; Image { z:2147483647; source: 'qrc:/images/images/food_throuth.png'; width: 20; height: 20}", item);
                     }
-                    else if(lxj>0.87)
+                    else if(lxj>lxj_tt)
                     {
                         im_type=20
-                        var image =im= Qt.createQmlObject("import QtQuick 2.14; Image { z:0; source: 'qrc:/images/images/food_throuth_big.png'; width: 20; height: 20}", item);
+                        var image =im= Qt.createQmlObject("import QtQuick 2.14; Image { z:2147483647; source: 'qrc:/images/images/food_throuth_big.png'; width: 20; height: 20}", item);
                     }
-                    else if(lxj>0.75)
+                    else if(lxj>lxj_h)
                     {
                         im_type=3
-                        var image =im= Qt.createQmlObject("import QtQuick 2.14; Image { z:0; source: 'qrc:/images/images/food_high.png'; width: 20; height: 20}", item);
+                        var image =im= Qt.createQmlObject("import QtQuick 2.14; Image { z:2147483647; source: 'qrc:/images/images/food_high.png'; width: 20; height: 20}", item);
 
                     }
-                    else if(lxj>0.73)
+                    else if(lxj>lxj_st)
                     {
                         im_type=4
-                        var image =im= Qt.createQmlObject("import QtQuick 2.14; Image { z:0; source: 'qrc:/images/images/food_s&t.png'; width: 20; height: 20}", item);
+                        var image =im= Qt.createQmlObject("import QtQuick 2.14; Image { z:2147483647; source: 'qrc:/images/images/food_s&t.png'; width: 20; height: 20}", item);
 
                     }
                     else
                     {
                         im_type=0
-                        var image =im= Qt.createQmlObject("import QtQuick 2.14; Image { z:0; source: 'qrc:/images/images/food.png'; width: 20; height: 20}", item);
+                        var image =im= Qt.createQmlObject("import QtQuick 2.14; Image { z:2147483647; source: 'qrc:/images/images/food.png'; width: 20; height: 20}", item);
                     }
                     x0=image.x=parseInt(Math.random()*40)*20
                     y0=image.y=parseInt(Math.random()*30)*20
                     c++
                 }
-                if(snack.cent>+100)
+                if(snack.cent>=100)
                 {
                     cent_text.x=800
                     cent_text.width=100
                 }
+                // impa=Qt.createQmlObject("import QtQuick 2.14; Image { z:2147483647; source: 'qrc:/images/images/forr.png'; width: 40; height: 40}", item);
+                // impa.x=x0-10
+                // impa.y=y0-10
             }
         }
 
         Rectangle {//显示分数
             id:cent_text
             z:10
-            x:820
-            y:10
-            width: 60
+            x:800
+            y:0
+            width: 100
             height: 40
             color: "#FFFF00"
-            opacity: 0.5
             Text {
                 id: cent
                 anchors.centerIn: parent
@@ -176,19 +185,34 @@ ApplicationWindow {
                 text: qsTr(""+(snack.cent+addcent))
             }
         }
+        Rectangle {//显示长度
+            id:lon_text
+            z:10
+            x:800
+            y:40
+            width: 100
+            height: 40
+            color: "#FFFF00"
+            Text {
+                id: l_t
+                anchors.centerIn: parent
+                font.pixelSize: 25
+                font.bold: true
+                text: qsTr("1m")
+            }
+        }
         Rectangle {//显示时间
             id:time_
             z:10
-            x:810
-            y:60
-            width: 80
+            x:800
+            y:80
+            width: 100
             height: 40
             color: "#FFFF00"
-            opacity: 0.5
             Text {
                 id: time_text
                 anchors.centerIn: parent
-                font.pixelSize: 30
+                font.pixelSize: 25
                 font.bold: true
                 text: qsTr("0s")
             }
@@ -196,12 +220,11 @@ ApplicationWindow {
         Rectangle {//显示加速状态
             id:speed_text
             z:10
-            x:810
-            y:110
-            width: 80
+            x:800
+            y:130
+            width: 100
             height: 30
             color: "#00FFFF"
-            opacity: 0.5
             Text {
                 id: s_t
                 anchors.centerIn: parent
@@ -213,12 +236,11 @@ ApplicationWindow {
         Rectangle {//显示穿过状态
             id:throuth_text
             z:10
-            x:810
-            y:150
-            width: 80
+            x:800
+            y:160
+            width: 100
             height: 30
             color: "#B200FF"
-            opacity: 0.5
             Text {
                 id: t_t
                 anchors.centerIn: parent
@@ -227,15 +249,32 @@ ApplicationWindow {
                 text: qsTr(timer.throuth+"0ms")
             }
         }
+        Rectangle {//显示是否高概率
+            id:high_text
+            visible: false
+            z:10
+            x:800
+            y:195
+            width: 100
+            height: 30
+            color: "#FF0000"
+            Text {
+                id: h_t
+                anchors.centerIn: parent
+                font.pixelSize: 20
+                font.bold: true
+                text: qsTr("高概率模式")
+            }
+        }
+
         Rectangle {//显示穿过状态
             id:bu_through
             z:10
             x:800
-            y:190
+            y:235
             width: 100
             height: 30
             color: "#FFFFFF"
-            opacity: 0.5
             Text {
                 id:bu_through_bu
                 anchors.centerIn: parent
@@ -258,7 +297,7 @@ ApplicationWindow {
                             {
                                 bu_through_bu.text="允许穿过自身"
                                 throuth_text.visible=true
-                                timer.throuth=2147483647
+                                timer.throuth=
                                 isThro=true
                                 if(doud) press_su.play()
                             }
@@ -267,15 +306,15 @@ ApplicationWindow {
                 }
             }
         }
-        Rectangle{
+
+        Rectangle{//显示控制按钮
             id:control__bu
             x:800
-            y:230
+            y:270
             z:10
             width: 100
             height: 30
             color: "#FFFFFF"
-            opacity: 0.5
             Text {
                 id:bu_control__bu
                 anchors.centerIn: parent
@@ -301,15 +340,14 @@ ApplicationWindow {
                 }
             }
         }
-        Rectangle{
+        Rectangle{//音效按钮
             id:soude_bu
             x:800
-            y:270
+            y:305
             z:10
             width: 100
             height: 30
             color: "#FFFFFF"
-            opacity: 0.5
             Text {
                 id:bu_soude__bu
                 anchors.centerIn: parent
@@ -334,7 +372,7 @@ ApplicationWindow {
                 }
             }
         }
-        // Rectangle{
+        /* Rectangle{
         //     id:music_bu
         //     x:800
         //     y:310
@@ -365,16 +403,15 @@ ApplicationWindow {
         //             }
         //         }
         //     }
-        // }
+        /*/
         Rectangle {//显示最高分
             id:maxcent_text
             z:10
-            x:810
+            x:800
             y:470
-            width: 80
+            width: 100
             height: 30
             color: "#FF0000"
-            opacity: 0.5
             Text {
                 id: m_t
                 anchors.centerIn: parent
@@ -386,12 +423,11 @@ ApplicationWindow {
         Rectangle {//显示最高分用时
             id:maxcentt_text
             z:10
-            x:810
+            x:800
             y:500
-            width: 80
+            width: 100
             height: 20
             color: "#FF0000"
-            opacity: 0.5
             Text {
                 id: mt_t
                 anchors.centerIn: parent
@@ -405,6 +441,7 @@ ApplicationWindow {
             visible: false
             x:0
             y:0
+            z:2147483647
             source: "qrc:/images/images/pause.png"
             Image {
                 id: pause_ic
@@ -542,7 +579,16 @@ ApplicationWindow {
                 }
             }
         }
-
+        Image {//头
+            z:2147483646
+            x:200
+            y:200
+            width: 20
+            height: 20
+            visible: true
+            id: hear
+            source: "qrc:/images/images/snack_hear.png"
+        }
 
         Item {
             z:2
@@ -645,23 +691,35 @@ ApplicationWindow {
                         switch(im_type)
                         {
                         case 1:
-                            timer.fast+=180
+                            if(timer.fast>2147483467)
+                                timer.fast=2147483647
+                            else
+                                timer.fast+=180
                             timer.interval=100        
                             speed_text.visible=true
                             break
                         case 10:
-                            timer.fast+=1800
+                            if(timer.fast>2147481847)
+                                timer.fast=2147483647
+                            else
+                                timer.fast+=1800
                             timer.interval=100
                             speed_text.visible=true
                             break
                         case 2:
-                            timer.throuth+=60
+                            if(timer.throuth>2147483467)
+                                timer.throuth=2147483647
+                            else
+                                timer.throuth+=180
                             isThro=true
                             bu_through_bu.text="允许穿过自身"
                             throuth_text.visible=true
                             break
                         case 20:
-                            timer.throuth+=600
+                            if(timer.throuth>2147481847)
+                                timer.throuth=2147483647
+                            else
+                                timer.throuth+=1800
                             isThro=true
                             bu_through_bu.text="允许穿过自身"
                             throuth_text.visible=true
@@ -670,18 +728,26 @@ ApplicationWindow {
                             addcent+=9
                             break
                         case 4:
-                            timer.fast+=180
+                            if(timer.fast>2147483467)
+                                timer.fast=2147483647
+                            else
+                                timer.fast+=180
                             timer.interval=100
                             speed_text.visible=true
-                            timer.throuth+=60
+                            if(timer.throuth>2147483467)
+                                timer.throuth=2147483647
+                            else
+                                timer.throuth+=180
                             isThro=true
                             bu_through_bu.text="允许穿过自身"
                             throuth_text.visible=true
                             break
                         default:break
                         }
-
+                        l_t.text=(snack.num+3)+"m"
                         timer2.im.destroy()
+                        // impa.visible=false
+                        // impa.destroy()
                         snack.cent++
                         snack.num++
                         var image=snack.body[snack.num]= Qt.createQmlObject("import QtQuick 2.14; Image { z:2; source: 'qrc:/images/images/snack_body1.png'; width: 20; height: 20}", item);
@@ -694,6 +760,7 @@ ApplicationWindow {
                         image.rotation=aa.rotation
                         image.x=aa.x+(-Math.cos(re)*20)
                         image.y=aa.y+(-Math.sin(re)*20)
+                        image.z=2147483600-snack.num
                         if((snack.cent+addcent)>maxcent)
                         {
                             file.setSource(filel+"/data.d")
@@ -706,42 +773,94 @@ ApplicationWindow {
                     }
                 }
             }
-            Image {
-                z:20000
-                x:200
-                y:200
-                width: 20
-                height: 20
-                visible: true
-                id: hear
-                source: "qrc:/images/images/snack_hear.png"
-            }
             Keys.onPressed: {
-                if(event.key==Qt.Key_W)
+                if(event.key===Qt.Key_W)
                     snack.w=1;
-                else if(event.key==Qt.Key_A)
+                else if(event.key===Qt.Key_A)
                     snack.a=1;
-                else if(event.key==Qt.Key_S)
+                else if(event.key===Qt.Key_S)
                     snack.s=1;
-                else if(event.key==Qt.Key_D)
+                else if(event.key===Qt.Key_D)
                     snack.d=1;
-                if(event.key==Qt.Key_Up)
+                if(event.key===Qt.Key_Up)
                     snack.w=1;
-                else if(event.key==Qt.Key_Left)
-                    snack.a=1;
-                else if(event.key==Qt.Key_Down)
-                    snack.s=1;
-                else if(event.key==Qt.Key_Right)
-                    snack.d=1;
-                else if(event.key==Qt.Key_F12)
-                    control=true
-                else if(event.key==Qt.Key_Space)
+                if(event.key===Qt.Key_V)
                 {
-                    if(pause)
+                    if(doud)
                     {
-                        pause=false
+                        doud=false
+                        bu_soude__bu.text="关闭音效"
+                    }
+                    else
+                    {
+                        doud=true
+                        bu_soude__bu.text="开启音效"
+                        press_su.play()
+                    }
+                }
+                else if(event.key===Qt.Key_Left)
+                    snack.a=1;
+                else if(event.key===Qt.Key_Down)
+                    snack.s=1;
+                else if(event.key===Qt.Key_Right)
+                    snack.d=1;
+                else if(event.key===Qt.Key_F12)
+                {
+                    win.title="SnackQt//开发者模式"
+                    control=true
+                }
+                else if(event.key===Qt.Key_Space)
+                {
+                    if(!quit.visible)
+                    {
+                        if(pause)
+                        {
+                            pause=false
+                            pause_.source="qrc:/images/images/pause_bu.png"
+                            pause_i.visible=false
+                            timer.running=true
+                            timer2.running=true
+                            timer3.running=true
+                            if(doud) press_su.play()
+                        }
+                        else
+                        {
+                            pause=true
+                            pause_.source="qrc:/images/images/_pause_bu.png"
+                            pause_i.visible=true
+                            timer.running=false
+                            timer2.running=false
+                            timer3.running=false
+                        }
+                    }
+                }
+            }
+            Keys.onReleased: {
+                if(event.key===Qt.Key_W)
+                    snack.w=0;
+                else if(event.key===Qt.Key_A)
+                    snack.a=0;
+                else if(event.key===Qt.Key_S)
+                    snack.s=0;
+                else if(event.key===Qt.Key_D)
+                    snack.d=0;
+                if(event.key===Qt.Key_Up)
+                    snack.w=0;
+                else if(event.key===Qt.Key_Left)
+                    snack.a=0;
+                else if(event.key===Qt.Key_Down)
+                    snack.s=0;
+                else if(event.key===Qt.Key_Right)
+                    snack.d=0;
+                else if(event.key===Qt.Key_Escape)
+                {
+                    if(quit.visible)
+                    {
                         pause_.source="qrc:/images/images/pause_bu.png"
+                        quit.visible=false
+                        pause=false
                         pause_i.visible=false
+                        pause_ic.visible=true
                         timer.running=true
                         timer2.running=true
                         timer3.running=true
@@ -749,45 +868,22 @@ ApplicationWindow {
                     }
                     else
                     {
-                        pause=true
                         pause_.source="qrc:/images/images/_pause_bu.png"
+                        quit.visible=true
+                        pause=true
                         pause_i.visible=true
+                        pause_ic.visible=false
                         timer.running=false
                         timer2.running=false
                         timer3.running=false
                         if(doud) press_su.play()
                     }
                 }
-            }
-            Keys.onReleased: {
-                if(event.key==Qt.Key_W)
-                    snack.w=0;
-                else if(event.key==Qt.Key_A)
-                    snack.a=0;
-                else if(event.key==Qt.Key_S)
-                    snack.s=0;
-                else if(event.key==Qt.Key_D)
-                    snack.d=0;
-                if(event.key==Qt.Key_Up)
-                    snack.w=0;
-                else if(event.key==Qt.Key_Left)
-                    snack.a=0;
-                else if(event.key==Qt.Key_Down)
-                    snack.s=0;
-                else if(event.key==Qt.Key_Right)
-                    snack.d=0;
-                else if(event.key==Qt.Key_Escape)
+                else if(event.kry===Qt.Key_Enter && quit.visible)
                 {
-                    quit.visible=true
-                    pause=true
-                    pause_.source="qrc:/images/images/_pause_bu.png"
-                    pause_i.visible=true
-                    timer.running=false
-                    timer2.running=false
-                    timer3.running=false
-                    if(doud) press_su.play()
+                    quit()
                 }
-                else if(event.key==Qt.Key_F1 &&control)
+                else if(event.key===Qt.Key_F1 &&control)
                 {
                     if(timer.fast>0)
                     {
@@ -802,7 +898,7 @@ ApplicationWindow {
                     }
                     if(doud) press_su.play()
                 }
-                else if(event.key==Qt.Key_F2 &&control)
+                else if(event.key===Qt.Key_F2 &&control)
                 {
                     if(timer.throuth>0)
                     {
@@ -817,7 +913,31 @@ ApplicationWindow {
                     }
                     if(doud) press_su.play()
                 }
-                else if(event.key==Qt.Key_Tab)
+                else if(event.key===Qt.Key_F3 &&control)
+                {
+                    if(lxj_s==0.85)
+                    {
+                        lxj_s=0.95
+                        lxj_ss=0.8
+                        lxj_t=0.75
+                        lxj_tt=0.6
+                        lxj_h=0.4
+                        lxj_st=0.2
+                        high_text.visible=true
+                    }
+                    else
+                    {
+                        lxj_s=0.85
+                        lxj_ss=0.8
+                        lxj_t=0.7
+                        lxj_tt=0.67
+                        lxj_h=0.6
+                        lxj_st=0.55
+                        high_text.visible=false
+                    }
+                    if(doud) press_su.play()
+                }
+                else if(event.key===Qt.Key_Tab)
                 {
                     if(isShow)
                     {
@@ -894,6 +1014,7 @@ ApplicationWindow {
                             quit.visible=false
                             pause=false
                             pause_.source="qrc:/images/images/pause_bu.png"
+                            pause_ic.visible=true
                             pause_i.visible=false
                             timer.running=true
                             timer2.running=true
