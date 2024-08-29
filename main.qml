@@ -16,17 +16,18 @@ ApplicationWindow {
     property string filel
     property bool doud:true
     property var impa
-    property real lxj_s:0.85
-    property real lxj_ss:0.8
-    property real lxj_t:0.7
-    property real lxj_tt:0.67
-    property real lxj_h:0.6
-    property real lxj_st:0.55
+    //不同种类食物生成概率（上一概率值减当前概率值为实际概率）普通食物实际概率=0.55
+    property real lxj_s:0.85    //加速        实际概率=1-0.85=0.15
+    property real lxj_ss:0.8    //大型加速     实际概率=0.85-0.8=0.05
+    property real lxj_t:0.7     //爬上自身     实际概率=0.8-0.7=0.1
+    property real lxj_tt:0.67   //大型爬上自身  实际概率=0.7-0.67=0.03
+    property real lxj_h:0.6     //高分数       实际概率=0.67-0.6=0.07
+    property real lxj_st:0.55   //加速及爬上自身 实际概率=0.6-0.55=0.05
     visible: true
     width: 800
     height: 600
-    title: "SnackQT"
-    //禁止窗口大小调整
+    title: "SnackQML"
+    //禁止窗口大小调整（人机的方法：当用户调整窗口大小时修改窗口大小为设定大小）
     onWidthChanged: {
         if(!isShow)
             win.width=800
@@ -42,18 +43,22 @@ ApplicationWindow {
     SoundEffect{
         id:press_su
         source: "qrc:/images/raw/click.wav"
-    }
-    SoundEffect{
-        id:move_su
-        source: "qrc:/images/raw/attack.wav"
+        function play_()
+        {
+            if(doud) press_su.play()
+        }
     }
     SoundEffect{
         id:move_ea
         source: "qrc:/images/raw/eat.wav"
     }
-    SoundEffect{
-        id:musi
-        source: "C:/Users/minec/Downloads/114.wav"
+    Text {
+        id: load_
+        z:2147483647
+        visible: true
+        font.pixelSize: 30
+        font.bold: true
+        text: qsTr("loading...")
     }
     Image{
         id:item
@@ -63,34 +68,38 @@ ApplicationWindow {
         height: 600
         Component.onCompleted: {
             var i,j
-                    for(i=0;i<800;i+=20)
-                    {
-                        for(j=0;j<600;j+=20)
-                        {
-                            var image = Qt.createQmlObject("import QtQuick 2.14; Image { z:-1; source: 'qrc:/images/images/back.png'; width: 20; height: 20}", item);
-                            image.x=i
-                            image.y=j
-                        }
-                    }
-                    filel="C:/Users/"+file.getUser()+"/AppData/LocalLow/snackQt"
-                    if(file.is(filel+"/data.d"))
-                    {
-                        file.setSource(filel+"/data.d")
-                        maxcent=Number(file.read())
-                        file.setSource(filel+"/data2.d")
-                        maxt=Number(file.read())
-                    }
-                    else
-                    {
-                        file.create(filel)
-                        file.setSource(filel+"/data.d")
-                        file.write("0")
-                        file.setSource(filel+"/data2.d")
-                        file.write("0")
-                    }
-                    m_t.text="最高分："+maxcent
-                    mt_t.text="用时："+Math.floor(maxt/100)+"s"
+            for(i=0;i<800;i+=20)
+            {
+               for(j=0;j<600;j+=20)
+                {
+                    var image = Qt.createQmlObject("import QtQuick 2.14; Image { z:-1; source: 'qrc:/images/images/back.png'; width: 20; height: 20}", item);
+                    image.x=i
+                    image.y=j
                 }
+            }
+            filel="C:/Users/"+file.getUser()+"/AppData/LocalLow/snackQt"
+            if(file.is(filel+"/data.d"))
+            {
+                file.setSource(filel+"/data.d")
+                maxcent=Number(file.read())
+                file.setSource(filel+"/data2.d")
+                maxt=Number(file.read())
+            }
+            else
+            {
+                file.create(filel)
+                file.setSource(filel+"/data.d")
+                file.write("0")
+                file.setSource(filel+"/data2.d")
+                file.write("0")
+            }
+            m_t.text="最高分："+maxcent
+            mt_t.text="用时："+Math.floor(maxt/100)+"s"
+            if(Qt.platform.os!="windows")
+                control_bu.visible=true
+
+            load_.visible=false
+        }
         Timer{
             property int t:0
             property int tt
@@ -104,11 +113,11 @@ ApplicationWindow {
                 time_text.text=tt+"s"
             }
         }
-        Timer{
+        Timer{//计时器2：食物生成
             property int c:0
-            property int x0
-            property int y0
-            property var im
+            property int x0 //存储生成的食物的位置
+            property int y0 //存储生成的食物的位置
+            property var im //存储生成的食物（Image）
             id: timer2;
             interval: 200;
             repeat: true;
@@ -158,14 +167,6 @@ ApplicationWindow {
                     y0=image.y=parseInt(Math.random()*30)*20
                     c++
                 }
-                if(snack.cent>=100)
-                {
-                    cent_text.x=800
-                    cent_text.width=100
-                }
-                // impa=Qt.createQmlObject("import QtQuick 2.14; Image { z:2147483647; source: 'qrc:/images/images/forr.png'; width: 40; height: 40}", item);
-                // impa.x=x0-10
-                // impa.y=y0-10
             }
         }
 
@@ -266,8 +267,7 @@ ApplicationWindow {
                 text: qsTr("高概率模式")
             }
         }
-
-        Rectangle {//显示穿过状态
+        Rectangle {//显示穿过状态（按钮）
             id:bu_through
             z:10
             x:800
@@ -280,34 +280,40 @@ ApplicationWindow {
                 anchors.centerIn: parent
                 font.pixelSize: 14
                 font.bold: true
-                text: qsTr("不允许穿过自身")
+                text: qsTr("不允许爬上自身")
+                function allow()
+                {
+                    bu_through_bu.text="允许爬上自身"
+                    throuth_text.visible=true
+                    isThro=true
+                }
+                function refuse()
+                {
+                    bu_through_bu.text="不允许爬上自身"
+                    throuth_text.visible=false
+                    timer.throuth=0
+                    isThro=false
+                }
+
                 MouseArea{
                     anchors.fill: parent;
                     onClicked: {
-                        if(control)
+                        if(control)//开发者模式下允许使用按钮修改
                         {
                             if(isThro)
-                            {
-                                bu_through_bu.text="不允许穿过自身"
-                                timer.throuth=0
-                                isThro=false
-                                if(doud) press_su.play()
-                            }
+                                bu_through_bu.allow()
                             else
                             {
-                                bu_through_bu.text="允许穿过自身"
-                                throuth_text.visible=true
-                                timer.throuth=
-                                isThro=true
-                                if(doud) press_su.play()
+                                bu_through_bu.refuse()
+                                timer.throuth=2147483647
                             }
+                            press_su.play_()
                         }
                     }
                 }
             }
         }
-
-        Rectangle{//显示控制按钮
+        Rectangle{//显示移动按钮的按钮
             id:control__bu
             x:800
             y:270
@@ -328,14 +334,13 @@ ApplicationWindow {
                             {
                                 bu_control__bu.text="不显示控制按钮"
                                 control_bu.visible=false
-                                if(doud) press_su.play()
                             }
                             else
                             {
                                 bu_control__bu.text="显示控制按钮"
                                 control_bu.visible=true
-                                if(doud) press_su.play()
                             }
+                            press_su.play_()
                     }
                 }
             }
@@ -436,7 +441,7 @@ ApplicationWindow {
                 text: qsTr("用时："+Math.floor(maxt/100)+"s")
             }
         }
-        Image {//暂停按钮
+        Image {//暂停背景蒙版
             id: pause_i
             visible: false
             x:0
@@ -450,34 +455,38 @@ ApplicationWindow {
                 source: "qrc:/images/images/pause_ic.png"
             }
         }
-        Image {
+        Image {//暂停按钮
             id: pause_
             x:820
             y:550
             source: "qrc:/images/images/pause_bu.png"
+            function true_()
+            {
+                pause=true
+                pause_.source="qrc:/images/images/_pause_bu.png"
+                pause_i.visible=true
+                timer.running=false
+                timer2.running=false
+                timer3.running=false
+            }
+            function false_()
+            {
+                pause=false
+                pause_.source="qrc:/images/images/pause_bu.png"
+                pause_i.visible=false
+                timer.running=true
+                timer2.running=true
+                timer3.running=true
+            }
+
             MouseArea{
                 anchors.fill: parent;
                 onClicked: {
                     if(pause)
-                    {
-                        pause=false
-                        pause_.source="qrc:/images/images/pause_bu.png"
-                        pause_i.visible=false
-                        timer.running=true
-                        timer2.running=true
-                        timer3.running=true
-                        if(doud) press_su.play()
-                    }
+                        pause_.false_()
                     else
-                    {
-                        pause=true
-                        pause_.source="qrc:/images/images/_pause_bu.png"
-                        pause_i.visible=true
-                        timer.running=false
-                        timer2.running=false
-                        timer3.running=false
-                        if(doud) press_su.play()
-                    }
+                        pause_.true_()
+                    press_su.play_()
                 }
             }
         }
@@ -489,27 +498,31 @@ ApplicationWindow {
             width: 60
             height:30
             source:"qrc:/images/images/show_false.png"
+            function show()
+            {
+                isShow=true
+                win.width=900
+                sho.source="qrc:/images/images/show_true.png"
+            }
+            function hide()
+            {
+                isShow=false
+                win.width=800
+                sho.source="qrc:/images/images/show_false.png"
+            }
+
             MouseArea{
                 anchors.fill: parent;
                 onClicked: {
                     if(sho.source=="qrc:/images/images/show_false.png")
-                    {
-                        isShow=true
-                        win.width=900
-                        sho.source="qrc:/images/images/show_true.png"
-                        if(doud) press_su.play()
-                    }
+                        sho.show()
                     else
-                    {
-                        isShow=false
-                        win.width=800
-                        sho.source="qrc:/images/images/show_false.png"
-                        if(doud) press_su.play()
-                    }
+                        sho.hide()
+                    press_su.play_()
                 }
             }
         }
-        Item{//控制按钮
+        Item{//移动按钮
             id:control_bu
             visible: false
             z:2147483647
@@ -579,7 +592,7 @@ ApplicationWindow {
                 }
             }
         }
-        Image {//头
+        Image {//蛇头
             z:2147483646
             x:200
             y:200
@@ -638,11 +651,7 @@ ApplicationWindow {
                 onTriggered:{
                     if(throuth>0) timer.throuth--
                     if(throuth<=0)
-                    {
-                        isThro=false
-                        bu_through_bu.text="不允许穿过自身"
-                        throuth_text.visible=false
-                    }
+                        bu_through_bu.refuse()
                     if(fast>0) timer.fast--
                     if(fast<=0)
                     {
@@ -654,7 +663,6 @@ ApplicationWindow {
                         if(hear.y>0 && (isThro? true:(!isp(hear.x,hear.y-20)))){
                             hear.y-=20
                             body_move(hear.x,hear.y+20,270)
-                            if(doud) move_su.play()
                         }
                         hear.rotation=270
                     }
@@ -663,7 +671,6 @@ ApplicationWindow {
                         if(hear.x>0 && (isThro? true:(!isp(hear.x-20,hear.y)))){
                             hear.x-=20
                             body_move(hear.x+20,hear.y,180)
-                            if(doud) move_su.play()
                         }
                         hear.rotation=180
                     }
@@ -672,7 +679,6 @@ ApplicationWindow {
                         if(hear.y<580 && (isThro? true:(!isp(hear.x,hear.y+20)))){
                             hear.y+=20
                             body_move(hear.x,hear.y-20,90)
-                            if(doud) move_su.play()
                         }
                         hear.rotation=90
                     }
@@ -681,7 +687,6 @@ ApplicationWindow {
                         if(hear.x<780 && (isThro? true:(!isp(hear.x+20,hear.y)))){
                             hear.x+=20
                             body_move(hear.x-20,hear.y,0)
-                            if(doud) move_su.play()
                         }
                         hear.rotation=0
                     }
@@ -711,18 +716,14 @@ ApplicationWindow {
                                 timer.throuth=2147483647
                             else
                                 timer.throuth+=180
-                            isThro=true
-                            bu_through_bu.text="允许穿过自身"
-                            throuth_text.visible=true
+                            bu_through_bu.allow()
                             break
                         case 20:
                             if(timer.throuth>2147481847)
                                 timer.throuth=2147483647
                             else
                                 timer.throuth+=1800
-                            isThro=true
-                            bu_through_bu.text="允许穿过自身"
-                            throuth_text.visible=true
+                            bu_through_bu.allow()
                             break
                         case 3:
                             addcent+=9
@@ -738,9 +739,7 @@ ApplicationWindow {
                                 timer.throuth=2147483647
                             else
                                 timer.throuth+=180
-                            isThro=true
-                            bu_through_bu.text="允许穿过自身"
-                            throuth_text.visible=true
+                            bu_through_bu.allow()
                             break
                         default:break
                         }
@@ -804,35 +803,31 @@ ApplicationWindow {
                     snack.s=1;
                 else if(event.key===Qt.Key_Right)
                     snack.d=1;
-                else if(event.key===Qt.Key_F12)
+                else if(event.key===Qt.Key_F12)//f12打开开发者模式
                 {
-                    win.title="SnackQt//开发者模式"
+                    win.title="SnackQML//开发者模式"
                     control=true
+                    press_su.play_()
                 }
-                else if(event.key===Qt.Key_Space)
+                else if(event.key===Qt.Key_Space)//esc打开退出界面
                 {
                     if(!quit.visible)
                     {
                         if(pause)
                         {
-                            pause=false
-                            pause_.source="qrc:/images/images/pause_bu.png"
-                            pause_i.visible=false
-                            timer.running=true
-                            timer2.running=true
-                            timer3.running=true
-                            if(doud) press_su.play()
+                            pause_.false_()
                         }
                         else
                         {
-                            pause=true
-                            pause_.source="qrc:/images/images/_pause_bu.png"
-                            pause_i.visible=true
-                            timer.running=false
-                            timer2.running=false
-                            timer3.running=false
+                            pause_.true_()
                         }
                     }
+                    else
+                    {
+                        quit.visible=false
+                        pause_.false_()
+                    }
+                    press_su.play_()
                 }
             }
             Keys.onReleased: {
@@ -855,33 +850,14 @@ ApplicationWindow {
                 else if(event.key===Qt.Key_Escape)
                 {
                     if(quit.visible)
-                    {
-                        pause_.source="qrc:/images/images/pause_bu.png"
-                        quit.visible=false
-                        pause=false
-                        pause_i.visible=false
-                        pause_ic.visible=true
-                        timer.running=true
-                        timer2.running=true
-                        timer3.running=true
-                        if(doud) press_su.play()
-                    }
+                        pause_.false_()
                     else
-                    {
-                        pause_.source="qrc:/images/images/_pause_bu.png"
-                        quit.visible=true
-                        pause=true
-                        pause_i.visible=true
-                        pause_ic.visible=false
-                        timer.running=false
-                        timer2.running=false
-                        timer3.running=false
-                        if(doud) press_su.play()
-                    }
+                        pause_.true_()
+                    press_su.play_()
                 }
-                else if(event.kry===Qt.Key_Enter && quit.visible)
+                else if(event.key===Qt.Key_Enter && quit.visible)
                 {
-                    quit()
+                    Qt.quit()
                 }
                 else if(event.key===Qt.Key_F1 &&control)
                 {
@@ -896,22 +872,20 @@ ApplicationWindow {
                         timer.fast=2147483647
                         speed_text.visible=true
                     }
-                    if(doud) press_su.play()
+                    press_su.play_()
                 }
                 else if(event.key===Qt.Key_F2 &&control)
                 {
                     if(timer.throuth>0)
                     {
-                        isThro=false
-                        timer.throuth=0
+                        bu_through_bu.refuse()
                     }
                     else
                     {
-                        isThro=true
                         timer.throuth=2147483647
-                        throuth_text.visible=true
+                        bu_through_bu.allow()
                     }
-                    if(doud) press_su.play()
+                    press_su.play_()
                 }
                 else if(event.key===Qt.Key_F3 &&control)
                 {
@@ -935,23 +909,15 @@ ApplicationWindow {
                         lxj_st=0.55
                         high_text.visible=false
                     }
-                    if(doud) press_su.play()
+                    press_su.play_()
                 }
-                else if(event.key===Qt.Key_Tab)
+                else if(event.key===Qt.Key_Tab)//显示面板
                 {
                     if(isShow)
-                    {
-                        isShow=false
-                        win.width=800
-                        sho.source="qrc:/images/images/show_false.png"
-                    }
+                        sho.hide()
                     else
-                    {
-                        isShow=true
-                        win.width=900
-                        sho.source="qrc:/images/images/show_true.png"
-                    }
-                    if(doud) press_su.play()
+                        sho.show()
+                    press_su.play_()
                 }
             }
         }
@@ -1019,7 +985,7 @@ ApplicationWindow {
                             timer.running=true
                             timer2.running=true
                             timer3.running=true
-                            if(doud) press_su.play()
+                            press_su.play_()
                         }
                     }
                 }
