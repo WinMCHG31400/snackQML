@@ -1,1 +1,1 @@
-a snack game made with qt
+a snack game made with qml
