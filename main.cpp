@@ -11,7 +11,6 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
 
     qmlRegisterType<GFile>("GFile",1,2,"GFile");
-
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     app.setWindowIcon(QIcon(":/images/images/icon.png"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
