@@ -27,6 +27,10 @@
         <file>images/food_mine.png</file>
         <file>images/flag.png</file>
         <file>images/back_null.png</file>
+        <file>images/help.PNG</file>
+        <file>images/agg.PNG</file>
+        <file>images/title.png</file>
+        <file>images/food_!!!.png</file>
     </qresource>
     <qresource prefix="/num">
         <file>images/1.png</file>
@@ -40,102 +44,84 @@
         <file>images/9.png</file>
     </qresource>
     <qresource prefix="/i">
-        <file>i/1.PNG</file>
-        <file>i/a_b.png</file>
-        <file>i/artillery.png</file>
-        <file>i/artillery_dead.png</file>
         <file>i/artillery_turret.png</file>
         <file>i/artillery1.png</file>
         <file>i/artillery2.png</file>
         <file>i/back.png</file>
         <file>i/back2.png</file>
-        <file>i/dust.png</file>
-        <file>i/experimental_hovertank_turret.png</file>
-        <file>i/explode_big.png</file>
         <file>i/metal.png</file>
-        <file>i/over.png</file>
-        <file>i/over_b.png</file>
-        <file>i/over_d.png</file>
-        <file>i/plasma_dead.png</file>
-        <file>i/plasma_tank.png</file>
-        <file>i/plasma_turret.png</file>
-        <file>i/playing.png</file>
-        <file>i/pr2.png</file>
-        <file>i/projectiles.png</file>
-        <file>i/shoge.png</file>
-        <file>i/start.png</file>
         <file>i/titlle.png</file>
         <file>i/tt.png</file>
-        <file>i/tttt.png</file>
-        <file>i/turret.png</file>
         <file>i/witer.png</file>
+        <file>i/bullet.png</file>
+        <file>i/shells.png</file>
+        <file>i/shoge.png</file>
+        <file>i/play_back.png</file>
     </qresource>
     <qresource prefix="/b">
         <file>i/but/back.png</file>
         <file>i/but/behi.svg</file>
         <file>i/but/behi_n.svg</file>
-        <file>i/but/bilbil.svg</file>
         <file>i/but/ch_last.svg</file>
         <file>i/but/ch_last_n.svg</file>
         <file>i/but/ch_next.svg</file>
         <file>i/but/ch_next_n.svg</file>
         <file>i/but/exit.svg</file>
-        <file>i/but/front.svg</file>
+        <file>i/but/w.svg</file>
         <file>i/but/front_n.svg</file>
         <file>i/but/hi.png</file>
         <file>i/but/icon_upgrade.png</file>
         <file>i/but/ih.png</file>
-        <file>i/but/left.svg</file>
+        <file>i/but/a.svg</file>
         <file>i/but/left_n.svg</file>
-        <file>i/but/left2.svg</file>
-        <file>i/but/left2_n.svg</file>
+        <file>i/but/q.svg</file>
+        <file>i/but/q_.svg</file>
         <file>i/but/mune.svg</file>
         <file>i/but/no.png</file>
         <file>i/but/noo.png</file>
-        <file>i/but/pause.png</file>
+        <file>i/but/setting.png</file>
         <file>i/but/right.svg</file>
         <file>i/but/right_n.svg</file>
-        <file>i/but/right2.svg</file>
-        <file>i/but/right2_n.svg</file>
+        <file>i/but/e.svg</file>
+        <file>i/but/e_.svg</file>
         <file>i/but/setting.svg</file>
         <file>i/but/space.svg</file>
-        <file>i/but/space2.svg</file>
+        <file>i/but/space_.svg</file>
         <file>i/but/start.svg</file>
-        <file>i/but/tobol.svg</file>
+        <file>i/but/shells.svg</file>
         <file>i/but/yes.png</file>
+        <file>i/but/bullet.svg</file>
     </qresource>
     <qresource prefix="/ex">
-        <file>i/explo1/1.png</file>
-        <file>i/explo1/2.png</file>
-        <file>i/explo1/3.png</file>
-        <file>i/explo1/4.png</file>
-        <file>i/explo1/5.png</file>
-        <file>i/explo1/6.png</file>
-        <file>i/explo1/7.png</file>
-        <file>i/explo1/8.png</file>
-        <file>i/explo1/9.png</file>
-        <file>i/explo1/10.png</file>
-        <file>i/explo1/11.png</file>
-        <file>i/explo1/12.png</file>
-        <file>i/explo1/13.png</file>
-        <file>i/explo1/e1.png</file>
-        <file>i/explo1/e2.png</file>
-        <file>i/explo1/e3.png</file>
-        <file>i/explo1/e4.png</file>
-        <file>i/explo1/e5.png</file>
-        <file>i/explo1/e6.png</file>
-        <file>i/explo1/e7.png</file>
-        <file>i/explo1/e8.png</file>
-        <file>i/explo1/e9.png</file>
-        <file>i/explo1/e91.png</file>
-        <file>i/explo1/e92.png</file>
-        <file>i/explo1/e93.png</file>
-        <file>i/explo1/e94.png</file>
-        <file>i/explo1/explode_big2.png</file>
-        <file>i/explo1/f1.png</file>
-        <file>i/explo1/f2.png</file>
-        <file>i/explo1/f3.png</file>
-        <file>i/explo1/f4.png</file>
-        <file>i/explo1/flame_large.png</file>
+        <file>i/explo/1_1.png</file>
+        <file>i/explo/1_2.png</file>
+        <file>i/explo/1_3.png</file>
+        <file>i/explo/1_4.png</file>
+        <file>i/explo/1_5.png</file>
+        <file>i/explo/1_6.png</file>
+        <file>i/explo/1_7.png</file>
+        <file>i/explo/1_8.png</file>
+        <file>i/explo/1_9.png</file>
+        <file>i/explo/1_9_1.png</file>
+        <file>i/explo/1_9_2.png</file>
+        <file>i/explo/1_9_3.png</file>
+        <file>i/explo/1_9_4.png</file>
+        <file>i/explo/2_1.png</file>
+        <file>i/explo/2_2.png</file>
+        <file>i/explo/2_3.png</file>
+        <file>i/explo/2_4.png</file>
+        <file>i/explo/2_5.png</file>
+        <file>i/explo/2_6.png</file>
+        <file>i/explo/2_7.png</file>
+        <file>i/explo/2_8.png</file>
+        <file>i/explo/2_9.png</file>
+        <file>i/explo/2_9_1.png</file>
+        <file>i/explo/2_9_2.png</file>
+        <file>i/explo/2_9_3.png</file>
+        <file>i/explo/2_9_4.png</file>
+        <file>i/explo/3_1.png</file>
+        <file>i/explo/3_2.png</file>
+        <file>i/explo/3_3.png</file>
+        <file>i/explo/3_4.png</file>
     </qresource>
 </RCC>

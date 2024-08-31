@@ -2,26 +2,29 @@ import QtQuick 2.14
 import QtQuick.Controls 2.14
 import GFile 1.2
 import QtMultimedia
-
+/*缩写声明：
+    bu - button 按钮
+    num - number
+  */
 ApplicationWindow {
     id:win
-    property int  w: 0;
-    property int  a: 0;
-    property int  s: 0;
-    property int  d: 0;
-    property int  q: 0;
-    property int  e: 0;
-    property int  r: 0;
-    property int  sp:0;
-    property int  ts: 0;
-    property var bos:[30];
-    property int issh: 0
-    property int num:0;
-    property string last:"w"
-    property string llst:"q"
-    property real v1: 12
-    property int tttt:0
-    property string file_q_source
+    property bool  w: false         //
+    property bool  a: false         //
+    property bool  s: false         //
+    property bool  d: false         //
+    property bool  q: false         //
+    property bool  e: false         //
+    property bool  r: false         //
+    property bool  spase:false      //
+    property int  charge_time: 0;   //
+    property var bos:[30];          //
+    property int issh: 0            //
+    property int num:0;             //
+    property string last:"w"        //
+    property string llst:"q"        //
+    property real v1: 12            //
+    property int tttt:0             //
+    property string file_q_source   //
     property bool isEat:true    //是否可以吃食物
     property bool canMine:false //是否开启扫雷
     property var blocks:[100]   //扫雷的格子
@@ -31,6 +34,7 @@ ApplicationWindow {
     property int hide_blocks:100//扫雷的隐藏的格子的数量
     property bool isNe:true     //是否允许食物生成
     property bool isShow:false  //控制面板是否显示
+    property bool isShow_:false //控制
     property bool isThro:false  //是否可以爬上自身
     property int im_type        //生成的食物的种类
     property bool control:false //是否开启开发者模式
@@ -48,24 +52,47 @@ ApplicationWindow {
     property real lxj_h:0.6     //高分数        实际概率=0.67-0.6=0.07
     property real lxj_st:0.55   //加速及爬上自身 实际概率=0.6-0.55=0.05
     property real lxj_m:0.45    //扫雷          实际概率=0.55-0.45=0.1
-    property bool is_ag:false
     property bool donot:true
     visible: true
     width: 800
     height: 600
     title: "SnackQML"
-    //创造炮弹
-    function creata_b(){
+    function wclick(ptr,fun){//点击效果
+        var i=0
+        var j=0.95
+        var x0=ptr.x,y0=ptr.y,w0=ptr.width,h0=ptr.height
+        var t1 = Qt.createQmlObject("import QtQuick 2.14; Timer {}",winn);
+        t1.interval = 40;
+        t1.repeat = true
+        t1.triggered.connect(function(){
+            i++
+            if(i===5)
+            {
+                t1.interval = 100;
+                fun()
+            }
+            if(i>10)
+            {
+                t1.stop()
+                ptr.width=w0
+                ptr.height=h0
+                ptr.x=x0
+                ptr.y=y0
+            }
+        })
+        t1.start()
+    }
+    function creata_shells(){//创造炮弹
         //本体
-        var image = Qt.createQmlObject("import QtQuick 2.12; Image { source: 'qrc:/i/i/a_b.png'; width: 9; height: 14.5}", item2_back);
-        image.x = tank.x+(tank.width+image.width)/3.0+3-item2_back.x
-        image.y =tank.y+(tank.height+image.height)/3.0+2-item2_back.y
+        var image = Qt.createQmlObject("import QtQuick 2.14; Image { source: 'qrc:/i/i/shells.png'; width: 9; height: 14.5}", item_play_back_q);
+        image.x = tank.x+(tank.width+image.width)/3.0+3-item_play_back_q.x
+        image.y =tank.y+(tank.height+image.height)/3.0+2-item_play_back_q.y
         image.rotation=(tank.rotation+tank_top.rotation)%360
-        var ree=(image.rotation-90)*Math.PI/180.0
-        image.x+=Math.cos(ree) * 60;
-        image.y+=Math.sin(ree) * 60
+        var rotation=(image.rotation-90)*Math.PI/180.0
+        image.x+=Math.cos(rotation) * 60;
+        image.y+=Math.sin(rotation) * 60
         //计时器
-        var timer = Qt.createQmlObject("import QtQuick 2.12; Timer {property real tt:15}", image);
+        var timer = Qt.createQmlObject("import QtQuick 2.14; Timer {property real tt:15}", image);
         timer.repeat = true;
         timer.interval = 16;
 
@@ -73,8 +100,8 @@ ApplicationWindow {
         {
             if(timer.tt<=0.3)
             {
-                creatpop(image.x,image.y,image,item2_back)
-                creatbol(image.x,image.y,item2_back);
+                create_shockwave(image.x,image.y,image,item_play_back_q)
+                create_blast_large(image.x,image.y,item_play_back_q);
                 timer.stop();
                 image.visible=false;
                 image.destroy();
@@ -85,52 +112,50 @@ ApplicationWindow {
                 var re=(image.rotation-90)*Math.PI/180.0
                 image.x += Math.cos(re) * timer.tt;
                 image.y += Math.sin(re) * timer.tt;
-                //超出范围删除
-                if (image.x > 2000 )
-                {
-                    timer.stop();
-                    image.destroy();
-                }
-                else if ( image.y > 1400)
-                {
-                    timer.stop();
-                    image.destroy();
-                }
-                else if( image.x<0 )
-                {
-                    timer.stop();
-                    image.destroy();
-                }
-                else if(image.y<0)
-                {
-                    timer.stop();
-                    image.destroy();
-                }
+                /* //超出范围删除
+                // if (image.x > 2000 )
+                // {
+                //     timer.stop();
+                //     image.destroy();
+                // }
+                // else if ( image.y > 1400)
+                // {
+                //     timer.stop();
+                //     image.destroy();
+                // }
+                // else if( image.x<0 )
+                // {
+                //     timer.stop();
+                //     image.destroy();
+                // }
+                // else if(image.y<0)
+                // {
+                //     timer.stop();
+                //     image.destroy();
+                 }*/
             }
         });
         timer.start();
         tit.start()
         issh=1
         fit.ty=1
-    }
-
-    //创造单个子弹
-    function creatpr(v){
-        var image = Qt.createQmlObject("import QtQuick 2.12; Image { source: 'qrc:/i/i/pr2.png'; width: 5; height: 12}", item2_back);
-        image.x = tank.x+(tank.width+image.width)/3.0+3-item2_back.x
-        image.y =tank.y+(tank.height+image.height)/3.0+2-item2_back.y
+    }    
+    function create_bullet(v){//创造单个子弹
+        var image = Qt.createQmlObject("import QtQuick 2.14; Image { source: 'qrc:/i/i/bullet.png'; width: 5; height: 12}", item_play_back_q);
+        image.x = tank.x+(tank.width+image.width)/3.0+3-item_play_back_q.x
+        image.y =tank.y+(tank.height+image.height)/3.0+2-item_play_back_q.y
         image.rotation=(tank.rotation+tank_top.rotation)%360
-        var ree=(image.rotation-90)*Math.PI/180.0
-        image.x+=Math.cos(ree) * 60;
-        image.y+=Math.sin(ree) * 60;
-        var timer = Qt.createQmlObject("import QtQuick 2.12; Timer {property real tt:"+v+"}", image);
+        var rotation=(image.rotation-90)*Math.PI/180.0
+        image.x+=Math.cos(rotation) * 60;
+        image.y+=Math.sin(rotation) * 60;
+        var timer = Qt.createQmlObject("import QtQuick 2.14; Timer {property real tt:"+v+"}", image);
         timer.interval = 16;
         timer.repeat = true;
         timer.triggered.connect(function()
         {
             if(timer.tt<=0.3)
             {
-                creatbol2(image.x,image.y);
+                create_blast_small(image.x,image.y);
                 timer.stop();
                 image.visible=false;
                 image.destroy();
@@ -141,6 +166,7 @@ ApplicationWindow {
                 var re=(image.rotation-90)*Math.PI/180.0
                 image.x += Math.cos(re) * timer.tt;
                 image.y += Math.sin(re) * timer.tt;
+                /*//超出范围删除
                 if (image.x > 2000 )
                 {
                     timer.stop();
@@ -160,108 +186,106 @@ ApplicationWindow {
                 {
                     timer.stop();
                     image.destroy();
-                }
+                }*/
             }
         });
         timer.start();
         issh=1
         fit.ty=1
     }
-
-    //创造子弹
-    function creatprs(){
-        creatpr(12)
+    function create_bullets(){//创造子弹
+        create_bullet(12)
         v1-=0.25
         tit2.start()
-        var t1 = Qt.createQmlObject("import QtQuick 2.12; Timer {}",winn);
+        var t1 = Qt.createQmlObject("import QtQuick 2.14; Timer {}",winn);
         t1.interval = 200;
         t1.repeat = false;
         t1.triggered.connect(function(){
-            creatpr(v1)
+            create_bullet(v1)
             v1-=0.25
-            var t1 = Qt.createQmlObject("import QtQuick 2.12; Timer {}",winn);
+            var t1 = Qt.createQmlObject("import QtQuick 2.14; Timer {}",winn);
             t1.interval = 200;
             t1.repeat = false;
             t1.triggered.connect(function(){
-                creatpr(v1)
+                create_bullet(v1)
                 v1-=0.25
-                var t1 = Qt.createQmlObject("import QtQuick 2.12; Timer {}",winn);
+                var t1 = Qt.createQmlObject("import QtQuick 2.14; Timer {}",winn);
                 t1.interval = 200;
                 t1.repeat = false;
                 t1.triggered.connect(function(){
-                    creatpr(v1)
+                    create_bullet(v1)
                     v1-=0.25
-                    var t1 = Qt.createQmlObject("import QtQuick 2.12; Timer {}",winn);
+                    var t1 = Qt.createQmlObject("import QtQuick 2.14; Timer {}",winn);
                     t1.interval = 200;
                     t1.repeat = false;
                     t1.triggered.connect(function(){
-                        creatpr(v1)
+                        create_bullet(v1)
                         v1-=0.25
-                        var t1 = Qt.createQmlObject("import QtQuick 2.12; Timer {}",winn);
+                        var t1 = Qt.createQmlObject("import QtQuick 2.14; Timer {}",winn);
                         t1.interval = 200;
                         t1.repeat = false;
                         t1.triggered.connect(function(){
-                            creatpr(v1)
+                            create_bullet(v1)
                             v1-=0.25
-                            var t1 = Qt.createQmlObject("import QtQuick 2.12; Timer {}",winn);
+                            var t1 = Qt.createQmlObject("import QtQuick 2.14; Timer {}",winn);
                             t1.interval = 200;
                             t1.repeat = false;
                             t1.triggered.connect(function(){
-                                creatpr(v1)
+                                create_bullet(v1)
                                 v1-=0.25
-                                var t1 = Qt.createQmlObject("import QtQuick 2.12; Timer {}",winn);
+                                var t1 = Qt.createQmlObject("import QtQuick 2.14; Timer {}",winn);
                                 t1.interval = 200;
                                 t1.repeat = false;
                                 t1.triggered.connect(function(){
-                                    creatpr(v1)
+                                    create_bullet(v1)
                                     v1-=0.25
-                                    var t1 = Qt.createQmlObject("import QtQuick 2.12; Timer {}",winn);
+                                    var t1 = Qt.createQmlObject("import QtQuick 2.14; Timer {}",winn);
                                     t1.interval = 200;
                                     t1.repeat = false;
                                     t1.triggered.connect(function(){
-                                        creatpr(v1)
+                                        create_bullet(v1)
                                         v1-=0.25
-                                        var t1 = Qt.createQmlObject("import QtQuick 2.12; Timer {}",winn);
+                                        var t1 = Qt.createQmlObject("import QtQuick 2.14; Timer {}",winn);
                                         t1.interval = 200;
                                         t1.repeat = false;
                                         t1.triggered.connect(function(){
-                                            creatpr(v1)
+                                            create_bullet(v1)
                                             v1-=0.25
-                                            var t1 = Qt.createQmlObject("import QtQuick 2.12; Timer {}",winn);
+                                            var t1 = Qt.createQmlObject("import QtQuick 2.14; Timer {}",winn);
                                             t1.interval = 200;
                                             t1.repeat = false;
                                             t1.triggered.connect(function(){
-                                                creatpr(v1)
+                                                create_bullet(v1)
                                                 v1-=0.25
-                                                var t1 = Qt.createQmlObject("import QtQuick 2.12; Timer {}",winn);
+                                                var t1 = Qt.createQmlObject("import QtQuick 2.14; Timer {}",winn);
                                                 t1.interval = 200;
                                                 t1.repeat = false;
                                                 t1.triggered.connect(function(){
-                                                    creatpr(v1)
+                                                    create_bullet(v1)
                                                     v1-=0.25
-                                                    var t1 = Qt.createQmlObject("import QtQuick 2.12; Timer {}",winn);
+                                                    var t1 = Qt.createQmlObject("import QtQuick 2.14; Timer {}",winn);
                                                     t1.interval = 200;
                                                     t1.repeat = false;
                                                     t1.triggered.connect(function(){
-                                                        creatpr(v1)
+                                                        create_bullet(v1)
                                                         v1-=0.25
                                                         var t1 = Qt.createQmlObject("import QtQuick 2.12; Timer {}",winn);
                                                         t1.interval = 200;
                                                         t1.repeat = false;
                                                         t1.triggered.connect(function(){
-                                                            creatpr(v1)
+                                                            create_bullet(v1)
                                                             v1-=0.25
                                                             var t1 = Qt.createQmlObject("import QtQuick 2.12; Timer {}",winn);
                                                             t1.interval = 200;
                                                             t1.repeat = false;
                                                             t1.triggered.connect(function(){
-                                                                creatpr(v1)
+                                                                create_bullet(v1)
                                                                 v1-=0.25
                                                                 var t1 = Qt.createQmlObject("import QtQuick 2.12; Timer {}",winn);
                                                                 t1.interval = 200;
                                                                 t1.repeat = false;
                                                                 t1.triggered.connect(function(){
-                                                                    creatpr(v1)
+                                                                    create_bullet(v1)
                                                                     v1=12
                                                                 })
                                                                 t1.start()
@@ -294,10 +318,8 @@ ApplicationWindow {
         })
         t1.start()
     }
-
-    //创造爆炸特效 大型
-    function creatbol(x,y,ptr){
-        var image = Qt.createQmlObject("import QtQuick 2.12; Image { source: 'qrc:/ex/i/explo1/1.png'; width: 50; height: 50}", ptr);
+    function create_blast_large(x,y,ptr){//创造爆炸特效 大型
+        var image = Qt.createQmlObject("import QtQuick 2.12; Image { source: 'qrc:/ex/i/explo/1_1.png'; width: 50; height: 50}", ptr);
         image.x = x-20.5
         image.y = y-17.75
         image.rotation=0
@@ -310,40 +332,40 @@ ApplicationWindow {
             switch(timer.tt)
             {
             case 2:
-                image.source="qrc:/ex/i/explo1/2.png";
+                image.source="qrc:/ex/i/explo/1_2.png";
                 break
             case 3:
-                image.source="qrc:/ex/i/explo1/3.png";
+                image.source="qrc:/ex/i/explo/1_3.png";
                 break
             case 4:
-                image.source="qrc:/ex/i/explo1/4.png";
+                image.source="qrc:/ex/i/explo/1_4.png";
                 break
             case 5:
-                image.source="qrc:/ex/i/explo1/5.png";
+                image.source="qrc:/ex/i/explo/1_5.png";
                 break
             case 6:
-                image.source="qrc:/ex/i/explo1/6.png";
+                image.source="qrc:/ex/i/explo/1_6.png";
                 break
             case 7:
-                image.source="qrc:/ex/i/explo1/7.png";
+                image.source="qrc:/ex/i/explo/1_7.png";
                 break
             case 8:
-                image.source="qrc:/ex/i/explo1/8.png";
+                image.source="qrc:/ex/i/explo/1_8.png";
                 break
             case 9:
-                image.source="qrc:/ex/i/explo1/9.png";
+                image.source="qrc:/ex/i/explo/1_9.png";
                 break
             case 10:
-                image.source="qrc:/ex/i/explo1/10.png";
+                image.source="qrc:/ex/i/explo/1_9_1.png";
                 break
             case 11:
-                image.source="qrc:/ex/i/explo1/11.png";
+                image.source="qrc:/ex/i/explo/1_9_2.png";
                 break
             case 12:
-                image.source="qrc:/ex/i/explo1/12.png";
+                image.source="qrc:/ex/i/explo/1_9_3.png";
                 break
             case 13:
-                image.source="qrc:/ex/i/explo1/13.png";
+                image.source="qrc:/ex/i/explo/1_9_4.png";
                 break
             default:
                 timer.stop();
@@ -352,14 +374,12 @@ ApplicationWindow {
         });
         timer.start();
     }
-
-    //创造爆炸特效 小型
-    function creatbol2(x,y){
-        var image = Qt.createQmlObject("import QtQuick 2.12; Image { source: 'qrc:/ex/i/explo1/e1.png'; width: 30; height: 30}", item2_back);
+    function create_blast_small(x,y){//创造爆炸特效 小型
+        var image = Qt.createQmlObject("import QtQuick 2.14; Image { source: 'qrc:/ex/i/explo/2_1.png'; width: 30; height: 30}", item_play_back_q);
         image.x = x-12.5
         image.y = y-9
         image.rotation=0
-        var timer = Qt.createQmlObject("import QtQuick 2.12; Timer {property int tt:1}", image);
+        var timer = Qt.createQmlObject("import QtQuick 2.14; Timer {property int tt:1}", image);
         timer.interval = 40;
         timer.repeat = true;
         timer.triggered.connect(function()
@@ -368,40 +388,40 @@ ApplicationWindow {
             switch(timer.tt)
             {
             case 2:
-                image.source="qrc:/ex/i/explo1/e2.png";
+                image.source="qrc:/ex/i/explo/2_2.png";
                 break
             case 3:
-                image.source="qrc:/ex/i/explo1/e3.png";
+                image.source="qrc:/ex/i/explo/2_3.png";
                 break
             case 4:
-                image.source="qrc:/ex/i/explo1/e4.png";
+                image.source="qrc:/ex/i/explo/2_4.png";
                 break
             case 5:
-                image.source="qrc:/ex/i/explo1/e5.png";
+                image.source="qrc:/ex/i/explo/2_5.png";
                 break
             case 6:
-                image.source="qrc:/ex/i/explo1/e6.png";
+                image.source="qrc:/ex/i/explo/2_6.png";
                 break
             case 7:
-                image.source="qrc:/ex/i/explo1/e7.png";
+                image.source="qrc:/ex/i/explo/2_7.png";
                 break
             case 8:
-                image.source="qrc:/ex/i/explo1/e8.png";
+                image.source="qrc:/ex/i/explo/2_8.png";
                 break
             case 9:
-                image.source="qrc:/ex/i/explo1/e9.png";
+                image.source="qrc:/ex/i/explo/2_9.png";
                 break
             case 10:
-                image.source="qrc:/ex/i/explo1/e91.png";
+                image.source="qrc:/ex/i/explo/2_9_1.png";
                 break
             case 11:
-                image.source="qrc:/ex/i/explo1/e92.png";
+                image.source="qrc:/ex/i/explo/2_9_2.png";
                 break
             case 12:
-                image.source="qrc:/ex/i/explo1/e93.png";
+                image.source="qrc:/ex/i/explo/2_9_3.png";
                 break
             case 13:
-                image.source="qrc:/ex/i/explo1/e94.png";
+                image.source="qrc:/ex/i/explo/2_9_4.png";
                 break
             default:
                 timer.stop();
@@ -410,15 +430,13 @@ ApplicationWindow {
         });
         timer.start();
     }
-
-    //创造冲击波
-    function creatpop(x,y,ptr1,ptr2){
-        var image = Qt.createQmlObject("import QtQuick 2.12; Image { source: 'qrc:/i/i/shoge.png'; width: 10; height: 10}", ptr2);
+    function create_shockwave(x,y,ptr1,ptr2){//创造冲击波
+        var image = Qt.createQmlObject("import QtQuick 2.14; Image { source: 'qrc:/i/i/shoge.png'; width: 10; height: 10}", ptr2);
         image.x = x+(ptr1.width-10)/2
         image.y = y+(ptr1.height-10)/2
         image.rotation=0
         image.opacity=1
-        var timer = Qt.createQmlObject("import QtQuick 2.12; Timer {property real tt:10;property real tii:5}", image);
+        var timer = Qt.createQmlObject("import QtQuick 2.14; Timer {property real tt:10;property real tii:5}", image);
         timer.interval = 40;
         timer.repeat = true;
         timer.triggered.connect(function()
@@ -438,9 +456,7 @@ ApplicationWindow {
         });
                 timer.start();
     }
-
-    function minesweep()//扫雷启动函数
-    {
+    function minesweep(){//扫雷启动函数
         var i,j
         for(i=0;i<=9;i++)
             for(j=0;j<=9;j++)
@@ -468,25 +484,16 @@ ApplicationWindow {
     //禁止窗口大小调整（人机的方法：当用户调整窗口大小时修改窗口大小为设定大小）
     onWidthChanged: {
         if(donot)
-        if(!is_ag)
         {
             if(!isShow)
                 win.width=800
             else
                 win.width=900
         }
-        else
-        {
-            win.width=1366
-        }
-
     }
     onHeightChanged: {
         if(donot)
-        if(!is_ag)
             win.height=600
-        else
-            win.height=700
     }
     GFile{
         id:file
@@ -518,6 +525,13 @@ ApplicationWindow {
         y:0
         width: 800
         height:600
+        Image{//标题
+            x:135
+            y:70
+            width: 550
+            height: 150
+            source:"qrc:/images/images/title.png"
+        }
         TextInput {
             x:600
             y:10
@@ -574,33 +588,6 @@ ApplicationWindow {
                 text: qsTr("用时："+Math.floor(maxt/100)+"s")
             }
         }
-
-        Rectangle {//开始游戏按钮
-            z:10
-            x:10
-            y:200
-            width: 100
-            height: 50
-            color: "#EEEE00"
-            Text {
-                anchors.centerIn: parent
-                font.pixelSize: 20
-                font.bold: true
-                text: qsTr("彩蛋")
-            }
-            MouseArea{
-                anchors.fill: parent;
-                onClicked: {
-                    win.x=0
-                    win.y=32
-                    win.width=1366
-                    win.height=700
-                    winn.visible=true
-                    start_item.visible=false
-                    is_ag=true
-                }
-            }
-        }
         Rectangle {//开始游戏按钮
             id:start_bu
             z:10
@@ -618,6 +605,8 @@ ApplicationWindow {
             MouseArea{
                 anchors.fill: parent;
                 onClicked: {
+                    if(isShow_)
+                        isShow=true
                     timer.running=true
                     timer2.running=true
                     timer3.running=true
@@ -777,7 +766,66 @@ ApplicationWindow {
                 }
             }
         }
-
+        Image {//开始"游戏"按钮
+            z:10
+            x:85
+            y:516
+            width: 630
+            height: 86
+            source: "qrc:/images/images/agg.PNG"
+            MouseArea{
+                anchors.fill: parent;
+                onClicked: {
+                    donot=false
+                    win.visibility=Window.FullScreen
+                    winn.visible=true
+                    start_item.visible=false
+                    winn.forceActiveFocus()
+                }
+            }
+        }
+        Rectangle {//帮助按钮
+            z:10
+            x:0
+            y:515
+            width: 85
+            height: 85
+            color: "#CD5C5C"
+            Text {
+                anchors.centerIn: parent
+                font.pixelSize: 20
+                font.bold: true
+                horizontalAlignment: Text.AlignHCenter
+                text: qsTr("帮助")
+            }
+            MouseArea{
+                anchors.fill: parent;
+                onClicked: {
+                    help.visible=true
+                }
+            }
+        }
+        Rectangle {//退出按钮
+            z:10
+            x:715
+            y:515
+            width: 85
+            height: 85
+            color: "#FF0000"
+            Text {
+                anchors.centerIn: parent
+                font.pixelSize: 20
+                font.bold: true
+                horizontalAlignment: Text.AlignHCenter
+                text: qsTr("退出")
+            }
+            MouseArea{
+                anchors.fill: parent;
+                onClicked: {
+                    Qt.quit()
+                }
+            }
+        }
     }
     Image {//额...
         visible: false
@@ -786,11 +834,7 @@ ApplicationWindow {
         property int aa:0
         source: "https://p1.music.126.net/15-M_C_SUgY33WYEEl_Q9Q==/109951168126517713.jpg?param=1000y1000"
         Timer{
-            id:pppp
-            repeat:true
-            interval: 2000
-            running:false
-            onTriggered: {
+            function next(){
                 switch(photo.aa)
                 {
                 case 0:
@@ -849,12 +893,129 @@ ApplicationWindow {
                     photo.source="https://p2.music.126.net/k488cSs0FSFo1WHGbigFpA==/109951168993334060.jpg?param=1000y1000"
                     photo.aa++
                     break
+                case 14:
+                    photo.source="https://i.biliimg.com/bfs/im/38080b13b5c33344b39ade9bdf912c4f9e516ae5.jpg@1000w_1000h_1c.webp"
+                    photo.aa++
+                    break
+                case 15:
+                    photo.source="https://p2.music.126.net/uX5M80cnoqZrauAlNr236Q==/109951162907863034.jpg?param=1000y1000"
+                    photo.aa++
+                    break
+                case 16:
+                    photo.source="https://p2.music.126.net/ZRF3_9Syzlvjel3SV3eMew==/109951168132838093.jpg?param=1000y1000"
+                    photo.aa++
+                    break
+                case 17:
+                    photo.source="https://p2.music.126.net/4g4I3R1BZIS_-2zWlzFbrw==/109951164912852348.jpg?param=1000y1000"
+                    photo.aa++
+                    break
+                case 18:
+                    photo.source="https://i.biliimg.com/bfs/im/a40aff309016580683887148a11d478b0cc141c7.png@1000w_1000h_1c.webp"
+                    photo.aa++
+                    break
+                case 19:
+                    photo.source="https://i.biliimg.com/bfs/article/4e297ed841ab414eb45091c0aae47d8d10830290.jpg@1000w_1000h_1c.webp"
+                    photo.aa++
+                    break
+                case 20:
+                    photo.source="https://p2.music.126.net/IbRFbNXW5jwOUS5UNPQF7Q==/109951165604772506.jpg?param=1000y1000"
+                    photo.aa++
+                    break
+                case 21:
+                    photo.source="https://p2.music.126.net/jA7PDJ6cOrfQOOxJlEiMnA==/109951164843126961.jpg?param=1000y1000"
+                    photo.aa++
+                    break
+                case 22:
+                    photo.source="https://i.biliimg.com/bfs/im/5a910a2e23f2c8019f8fe5387c0a0e65db67206e.jpg@1000w_1000h_1c.webp"
+                    photo.aa++
+                    break
+                case 23:
+                    photo.source="https://i.biliimg.com/bfs/article/968cab0794c174d0a638515c5d523f8410830290.png@1000w_1000h_1c.webp"
+                    photo.aa++
+                    break
+                case 24:
+                    photo.source="https://p1.music.126.net/N_uwtB2mmwHQvzLXO3bzdA==/109951166711714910.jpg?param=1000y1000"
+                    photo.aa++
+                    break
+                case 25:
+                    photo.source="https://i.biliimg.com/bfs/im/f860b226326a4d7d232f2e742c7547f5db5b90a8.jpg@1000w_1000h_1c.webp"
+                    photo.aa++
+                    break
                 default:
                     photo.source="https://p1.music.126.net/15-M_C_SUgY33WYEEl_Q9Q==/109951168126517713.jpg?param=1000y1000"
                     photo.aa=0
                 }
+            }
+            id:pppp
+            repeat:true
+            interval: 4000
+            running:false
+            onTriggered: {
+                pppp.next()
            }
         }
+        MouseArea{
+            anchors.fill: parent
+            onClicked: {
+                pppp.next()
+            }
+        }
+        Rectangle {
+            x:-140
+            y:190
+            width: 140
+            height: 90
+            Rectangle {//自动播放开关
+                id:bu_auto
+                z:10
+                x:10
+                y:10
+                width: 120
+                height: 50
+                color: "#00FF00"
+                Text {
+                    id:bu_auto_text
+                    anchors.centerIn: parent
+                    font.pixelSize: 14
+                    font.bold: true
+                    text: qsTr("自动播放")
+                }
+                MouseArea{
+                    anchors.fill: parent;
+                    onClicked: {
+                        if(!pppp.running)
+                        {
+                            pppp.running=true
+                            bu_auto.color="#00FF00"
+                            bu_auto_text.text="自动播放"
+                        }
+                        else
+                        {
+                            pppp.running=false
+                            bu_auto.color="#CDCDC1"
+                            bu_auto_text.text="手动播放"
+
+                        }
+                        press_su.play_()
+                    }
+                }
+            }
+            Rectangle {
+                x:10
+                y:60
+                width: 120
+                height: 20
+                Text {
+                    anchors.centerIn: parent
+                    font.pixelSize: 10
+                    font.bold: true
+                    text: qsTr("点击图片切换到下一张")
+                }
+            }
+        }
+
+
+
     }
     Image{//游戏界面
         visible: false
@@ -980,7 +1141,6 @@ ApplicationWindow {
                 }
             }
         }
-
         Rectangle {//显示分数
             id:cent_text
             z:10
@@ -1226,6 +1386,26 @@ ApplicationWindow {
                 }
             }
         }
+        Rectangle {//帮助按钮
+            z:10
+            x:800
+            y:420
+            width: 100
+            height: 30
+            color: "#EEEE00"
+            Text {
+                anchors.centerIn: parent
+                font.pixelSize: 14
+                font.bold: true
+                text: qsTr("帮助")
+            }
+            MouseArea{
+                anchors.fill: parent;
+                onClicked: {
+                    help.visible=true
+                }
+            }
+        }
         Rectangle {//显示最高分
             id:maxcent_text
             z:10
@@ -1419,7 +1599,6 @@ ApplicationWindow {
             id: hear
             source: "qrc:/images/images/snack_hear.png"
         }
-
         Item {//蛇身体
             z:2
             focus: true
@@ -1686,35 +1865,42 @@ ApplicationWindow {
                     mine_item.visible=false
                     press_su.play_()
                     isEat=false
+                     press_su.play_()
                 }
                 else
                 {
-                    if(!quit.visible)
+                    if(donot)
                     {
-                        quit.visible=true
-                        pause=true
-                        pause_.source="qrc:/images/images/_pause_bu.png"
-                        pause_ic.visible=false
-                        pause_i.visible=true
-                        timer.running=false
-                        timer2.running=false
-                        timer3.running=false
-                        press_su.play_()
-                    }
-                    else
-                    {
-                        quit.visible=false
-                        pause=false
-                        pause_.source="qrc:/images/images/pause_bu.png"
-                        pause_ic.visible=true
-                        pause_i.visible=false
-                        timer.running=true
-                        timer2.running=true
-                        timer3.running=true
-                        press_su.play_()
+                        if(item.visible)
+                        {
+                            if(!quit.visible)
+                            {
+                                quit.visible=true
+                                pause=true
+                                pause_.source="qrc:/images/images/_pause_bu.png"
+                                pause_ic.visible=false
+                                pause_i.visible=true
+                                timer.running=false
+                                timer2.running=false
+                                timer3.running=false
+                                press_su.play_()
+                            }
+                            else
+                            {
+                                quit.visible=false
+                                pause=false
+                                pause_.source="qrc:/images/images/pause_bu.png"
+                                pause_ic.visible=true
+                                pause_i.visible=false
+                                timer.running=true
+                                timer2.running=true
+                                timer3.running=true
+                                press_su.play_()
+                            }
+                             press_su.play_()
+                        }
                     }
                 }
-                press_su.play_()
             }
             else if(event.key===Qt.Key_Enter && quit.visible)
             {
@@ -2002,7 +2188,6 @@ ApplicationWindow {
             }
         }
     }
-
     Image{//退出确认界面
         id:quit
         visible: false
@@ -2012,11 +2197,11 @@ ApplicationWindow {
         }
         Rectangle{
             color: "#E8E8E8"
-            x:270
+            x:200
             y:260
-            width:260
+            width:400
             height: 80
-            Rectangle{
+            Rectangle{//退出按钮
                 id:exit
                 x:20
                 y:20
@@ -2039,9 +2224,44 @@ ApplicationWindow {
                     }
                 }
             }
-            Rectangle{
-                id:cans
+            Rectangle{//主菜单按钮
+                id:bu_item_mian
                 x:140
+                y:20
+                z:10
+                width: 100
+                height: 40
+                color: "#FFFFFF"
+                opacity: 0.5
+                Text {
+                    anchors.centerIn: parent
+                    font.pixelSize: 30
+                    font.bold: true
+                    text: qsTr("主菜单")
+                    MouseArea{
+                        anchors.fill: parent;
+                        onClicked: {
+                            if(isShow)
+                                isShow_=true
+                            else
+                                isShow_=false
+                            isShow=false
+                            quit.visible=false
+                            item.visible=false
+                            start_item.visible=true
+                            pause_ic.visible=true
+                            pause_i.visible=false
+                            pause=false
+                            win.width=800
+                            win.height=600
+                            pause_.source="qrc:/images/images/pause_bu.png"
+                        }
+                    }
+                }
+            }
+            Rectangle{//取消按钮
+                id:cans
+                x:260
                 y:20
                 z:10
                 width: 100
@@ -2072,14 +2292,12 @@ ApplicationWindow {
             }
         }
     }
-
     Item {//彩蛋
         id:winn
-        width: 1366
-        height: 700
+        anchors.fill: parent;
         z:9999
         visible: false;
-        Component.onCompleted: {
+        Component.onCompleted: {//加载游戏状态
             file_q_source="C:/Users/"+file_q.getUser()+"/AppData/Local/Green_Game_m"
             file_q.create(file_q_source)
             file_q.source=file_q_source+"/game.ff"
@@ -2087,9 +2305,9 @@ ApplicationWindow {
             {
 
                 file_q.source=file_q_source+"/x.ff"
-                item2_back.x=Number(file_q.read())
+                item_play_back_q.x=Number(file_q.read())
                 file_q.source=file_q_source+"/y.ff"
-                item2_back.y=Number(file_q.read())
+                item_play_back_q.y=Number(file_q.read())
                 file_q.source=file_q_source+"/1.ff"
                 tank.rotation=Number(file_q.read())
                 file_q.source=file_q_source+"/2.ff"
@@ -2112,444 +2330,178 @@ ApplicationWindow {
         GFile{
             id:file_q
         }
-
-        //背景
-        Image {
-            width: winn.width
-            height: winn.height
+        //键盘事件
+        Keys.onPressed: {
+            if(event.key===Qt.Key_W)
+                w=true
+            else if(event.key===Qt.Key_A)
+                a=true
+            else if(event.key===Qt.Key_S)
+                s=true
+            else if(event.key===Qt.Key_D)
+                d=true
+            else if(event.key===Qt.Key_Q)
+                q=true
+            else if(event.key===Qt.Key_E)
+                e=true
+            else if(event.key===Qt.Key_Space)
+                spase=true
+            else if(event.key===Qt.Key_R)
+                r=true
+        }
+        Keys.onReleased: {
+            if(event.key===Qt.Key_W)
+                w=false
+            else if(event.key===Qt.Key_A)
+                a=false
+            else if(event.key===Qt.Key_S)
+                s=false
+            else if(event.key===Qt.Key_D)
+                d=false
+            else if(event.key===Qt.Key_Q)
+                q=false
+            else if(event.key===Qt.Key_E)
+                e=false
+            else if(event.key===Qt.Key_Escape)
+            {
+                if(item_setting_q.visible)
+                {
+                    if(item_setting_q.visible==true)
+                    {
+                        item_setting_q.visible=false
+                        exit_q2.visible=false
+                        timer_play.start()
+                    }
+                    else
+                        item_setting_q.visible=false
+                }
+                else
+                {
+                    item_setting_q.visible=true
+                    exit_q2.visible=true
+                    menu.visible=true
+                    timer_play.running=false
+                }
+            }
+        }
+        Image {//背景
+            anchors.fill: parent;
             visible:true
             source:"qrc:/i/i/back.png"
         }
-        //控制事件
-        Timer {
-            function mant(){
+        Timer {//控制事件
+            function tank_photo_switch(){
                 if(tank.source=="qrc:/i/i/artillery1.png")
                     tank.source="qrc:/i/i/artillery2.png"
                 else
                     tank.source="qrc:/i/i/artillery1.png"
             }
-
-            function ifw(){
-                var ra= (tank.rotation-90)*Math.PI/180;
-                var a=item2_back.x-Math.cos(ra) * 1;
-                if(a<=tank.x && a>=(tank.x-2000+tank.width*Math.cos(ra)))
-                    item2_back.x=a
-                a=item2_back.y-Math.sin(ra) * 1;
-                if(a<=tank.y && a>=(tank.y-1400+Math.sin(ra) * tank.height))
-                    item2_back.y=a
-            }
-            function ifs(){
-                var ra= (tank.rotation-90)*Math.PI/180;
-                var a=item2_back.x+Math.cos(ra) * 0.6;
-                if(a<=tank.x && a>=(tank.x-2000+tank.width*Math.cos(ra)))
-                    item2_back.x=a
-                a=item2_back.y+Math.sin(ra) * 0.6;
-                if(a<=tank.y && a>=(tank.y-1400+Math.sin(ra) * tank.height))
-                    item2_back.y=a
-            }
-            function ifa(){
-                     tank.rotation-=0.5;
-            }
-            function ifd(){
-                    tank.rotation+=0.5;
-            }
-            id: timer0;
+            id: timer_play;
             interval: 20;
             repeat: true;
             running:false;
             onTriggered:{
-                var ra= (tank.rotation-90)*Math.PI/180;
+                var rodian= (tank.rotation-90)*Math.PI/180;
+                var aa
                 //坦克移动，转向
-                if(last=="w"){
-                    if(w==1 && s==1 && a==0 && d==0)
-                    {
-                        tttt++
-                        mant()
-                        last="w"
-                        ifs()
-                    }
-                    else if(w==1 && ( a==1 || d==1 ) && s==0)
-                    {
-                        tttt++
-                        mant()
-                        last="w"
-                        ifw()
-                        if(a==1)
-                            ifa()
-                        else
-                            ifd()
-                    }
-                    else if(w==1)
-                    {
-                        tttt++
-                        mant()
-                        last="w"
-                        ifw()
-                    }
-                    else if(s==1)
-                    {
-                        tttt++
-                        mant()
-                        last="s"
-                        ifs()
-                    }
-                    else if(a==1)
-                    {
-                        tttt++
-                        mant()
-                        last="a"
-                        ifa()
-                    }
-                    else if(d==1)
-                    {
-                        tttt++
-                        mant()
-                        last="d"
-                        ifd()
-                    }
-                }
-                else if(last=="s"){
-                    if(s==1 && w==1 && a==0 && d==0)
-                    {
-                        tttt++
-                        mant()
-                        last="s"
-                        ifw()
-                    }
-                    else if(s==1 && ( a==1 || d==1 ) && w==0)
-                    {
-                        tttt++
-                        mant()
-                        ifs()
-                        last="s"
-                        if(a==1)
-                            ifa()
-                        else
-                            ifd()
-                    }
-                    else if(w==1)
-                    {
-                        tttt++
-                        mant()
-                        last="w"
-                        ifw()
-                    }
-                    else if(s==1)
-                    {
-                        tttt++
-                        mant()
-                        last="s"
-                        ifs()
-                    }
-                    else if(a==1)
-                    {
-                        tttt++
-                        mant()
-                        last="a"
-                        ifa()
-                    }
-                    else if(d==1)
-                    {
-                        tttt++
-                        mant()
-                        last="d"
-                        ifd()
-                    }
-                }
-                else if(last=="a"){
-                    if(a==1 && d==1 && w==0 && s==0)
-                    {
-                        tttt++
-                        mant()
-                        last="a"
-                        ifd()
-                    }
-                    else if(a==1 && ( w==1 || s==1 ) && d==0)
-                    {
-                        tttt++
-                        mant()
-                        ifa()
-                        last="a"
-                        if(w==1)
-                            ifw()
-                        else
-                            ifs()
-                    }
-                    else if(w==1)
-                    {
-                        tttt++
-                        mant()
-                        last="w"
-                        ifw()
-                    }
-                    else if(s==1)
-                    {
-                        tttt++
-                        mant()
-                        last="s"
-                        ifs()
-                    }
-                    else if(a==1)
-                    {
-                        tttt++
-                        mant()
-                        last="a"
-                        ifa()
-                    }
-                    else if(d==1)
-                    {
-                        tttt++
-                        mant()
-                        last="d"
-                        ifd()
-                    }
-                }
-                else if(last=="d"){
-                    if(d==1 && a==1 && w==0 && s==0)
-                    {
-                        tttt++
-                        mant()
-                        last="d"
-                        ifa()
-                    }
-                    else if(d==1 && ( w==1 || s==1 ) && a==0)
-                    {
-                        tttt++
-                        mant()
-                        ifd()
-                        last="d"
-                        if(w==1)
-                            ifw()
-                        else
-                            ifs()
-                    }
-                    else if(w==1)
-                    {
-                        tttt++
-                        mant()
-                        last="w"
-                        ifw()
-                    }
-                    else if(s==1)
-                    {
-                        tttt++
-                        mant()
-                        last="s"
-                        ifs()
-                    }
-                    else if(a==1)
-                    {
-                        tttt++
-                        mant()
-                        last="a"
-                        ifa()
-                    }
-                    else if(d==1)
-                    {
-                        tttt++
-                        mant()
-                        last="d"
-                        ifd()
-                    }
-                }
-                if(w==0 && s==0)
+                if(w)
                 {
-                    ba.source="qrc:/b/i/but/left.svg"
-                    bd.source="qrc:/b/i/but/right.svg"
+                    aa=item_play_back_q.x-Math.cos(rodian) * 1;
+                    if(aa<=tank.x && aa>=(tank.x-2000+tank.width*Math.cos(rodian)))
+                        item_play_back_q.x=aa
+                    aa=item_play_back_q.y-Math.sin(rodian) * 1;
+                    if(aa<=tank.y && aa>=(tank.y-1400+Math.sin(rodian) * tank.height))
+                        item_play_back_q.y=aa
+                    tank_photo_switch()
                 }
-                if(a==0 && d==0)
+                else if(a)
                 {
-                    bw.source="qrc:/b/i/but/front.svg"
-                    bs.source="qrc:/b/i/but/behi.svg"
+                    tank.rotation-=0.5;
+                    tank_photo_switch()
                 }
+                else if(s)
+                {
+                    aa=item_play_back_q.x+Math.cos(rodian) * 0.6;
+                    if(aa<=tank.x && aa>=(tank.x-2000+tank.width*Math.cos(rodian)))
+                        item_play_back_q.x=aa
+                    aa=item_play_back_q.y+Math.sin(rodian) * 0.6;
+                    if(aa<=tank.y && aa>=(tank.y-1400+Math.sin(rodian) * tank.height))
+                        item_play_back_q.y=aa
+                    tank_photo_switch()
+                }
+                else if(d)
+                {
+                    tank.rotation+=0.5;
+                    tank_photo_switch()
+                }
+
                 //切换弹药类型
-                if(r==1)
+                if(r)
                 {
-                    r=0
-                    if(br.iss==0)
+                    r=false
+                    if(bu_ammunition_switch_q.type)
                     {
-                        br.iss=1
-                        br.source="qrc:/b/i/but/bilbil.svg"
+                        bu_ammunition_switch_q.type=false
+                        bu_ammunition_switch_q.source="qrc:/b/i/but/bullet.svg"
                     }
                     else
                     {
-                        br.iss=0
-                        br.source="qrc:/b/i/but/tobol.svg"
+                        bu_ammunition_switch_q.type=true
+                        bu_ammunition_switch_q.source="qrc:/b/i/but/shells.svg"
                     }
                 }
                 //炮塔转向
                 if(issh==0)
                 {
-                    if(llst=="q")
-                    {
-                        if(q==1 && e==1)
-                        {
-                            tank_top.rotation+=0.4
-                            llst="q"
-                        }
-                        else if(q==1)
-                        {
-                            tank_top.rotation-=0.4
-                            llst="q"
-                        }
-                        else if(e==1)
-                        {
-                            tank_top.rotation+=0.4
-                            llst="e"
-                        }
-                    }
-                    else  if(llst=="e")
-                    {
-                        if(q==1 && e==1)
-                        {
-                            tank_top.rotation-=0.4
-                            llst="e"
-                        }
-                        else if(q==1)
-                        {
-                            tank_top.rotation-=0.4
-                            llst="q"
-                        }
-                        else if(e==1)
-                        {
-                            tank_top.rotation+=0.4
-                            llst="e"
-                        }
-                    }
+                    if(q)
+                        tank_top.rotation-=0.4
+                    else if(e)
+                        tank_top.rotation+=0.4
                 }
                 else
                 {
-                    q==0
-                    e==0
+                    q=false
+                    e=false
                 }
                 //射击 space
-                if(ts>0)
+                if(charge_time>0)
                 {
-                    ts--;
-                    tex.text=qsTr("装弹："+ts+"ms")
+                    charge_time--;
+                    charge_t_text_q.text=qsTr("装弹："+charge_time+"ms")
                 }
-                else if(sp==1)
+                else if(spase)
                 {
-                    sp=0;
-                    bsp.source="qrc:/b/i/but/space2.svg"
-                    bq.source="qrc:/b/i/but/left2_n.svg"
-                    be.source="qrc:/b/i/but/right2_n.svg"
-                    if(br.iss==0)
+                    spase=false;
+                    bu_space_q.source="qrc:/b/i/but/space_.svg"
+                    bu_q_q.source="qrc:/b/i/but/q_.svg"
+                    bu_e_q.source="qrc:/b/i/but/e_.svg"
+                    if(bu_ammunition_switch_q.type)
                     {
-                        ts=150;
-                        creata_b()
+                        charge_time=150;
+                        creata_shells()
                     }
                     else
                     {
-                        ts=200
-                        creatprs()
+                        charge_time=200
+                        create_bullets()
                     }
                 }
                 else
                 {
-                    bsp.iss=0
-                    bsp.source="qrc:/b/i/but/space.svg"
+                    bu_space_q.source="qrc:/b/i/but/space.svg"
                 }
                 file_q.source=file_q_source+"/x.ff"
-                file_q.write(item2_back.x.toString())
+                file_q.write(item_play_back_q.toString())
                 file_q.source=file_q_source+"/y.ff"
-                file_q.write(item2_back.y.toString())
+                file_q.write(item_play_back_q.toString())
                 file_q.source=file_q_source+"/1.ff"
                 file_q.write(tank.rotation.toString())
                 file_q.source=file_q_source+"/2.ff"
                 file_q.write(tank_top.rotation.toString())
             }
         }
-
-        //单位选择视图
-        Item {
-            id:item_ch
-            width: winn.width
-            height:winn.height
-            x:0
-            y:0
-            visible: false
-            property int type_ch:1
-            Image {
-                id:ch_tank
-                source: "qrc:/i/i/artillery1.png"
-                width: 58
-                height: 76
-                x:(winn.width-width)/2
-                y:(winn.height-height)/2
-                Image {
-                    id: ch_tank_top
-                    width: 26;
-                    height: 130;
-                    x: 16
-                    y:-25
-                    source: "qrc:/i/i/artillery_turret.png"
-                }
-            }
-            //上一个
-            Image {
-                id:ch_last
-                width: 80
-                height:400
-                x:0
-                y:(winn.height-400)/2
-                source: "qrc:/b/i/but/ch_last.svg"
-            }
-            //下一个
-            Image {
-                id: ch_next
-                width: 80
-                height:400
-                x:winn.width-80
-                y:(winn.height-400)/2
-                source: "qrc:/b/i/but/ch_next.svg"
-            }
-            //开始按钮
-            Image {
-                id: ch_done
-                x:winn.width-width-10
-                y:winn.height-height-10
-                source: "qrc:/b/i/but/start.svg"
-                MouseArea {
-                    anchors.fill: parent;
-                    z: 1
-                    onClicked: {
-                        wclick(ch_done,function(){
-                            cet.startl(1,function(){
-                                item_ch.visible=false;
-                                item2.visible=true;})
-                            timer.start()
-                            item2.forceActiveFocus()
-                            timer.running=true;
-                        })
-                    }
-                    onEntered: {
-                    }
-                }
-            }
-            //返回
-            Image {
-                id: ch_exit
-                x:10
-                y:winn.height-height-10
-                source: "qrc:/b/i/but/mune.svg"
-                MouseArea {
-                    anchors.fill: parent;
-                    z: 1
-                    onClicked: {
-                        wclick(ch_exit,function(){
-                            cet.startl(1,function(){
-                                item_ch.visible=false;
-                                item1.visible=true;})
-                            item1.forceActiveFocus()
-                        })
-                    }
-                }
-            }
-        }
-        //开始视图
-        Item {
-            id: item1
+        Item {//开始视图
+            id: item_start_q
             visible: true;
             x: 0
             y: 0
@@ -2564,7 +2516,7 @@ ApplicationWindow {
                 source: "qrc:/i/i/titlle.png"
                 anchors.verticalCenterOffset: -124
                 anchors.horizontalCenterOffset: 0
-                anchors.centerIn:item1;
+                anchors.centerIn:item_start_q;
             }
             //开始按钮
             Image {
@@ -2572,71 +2524,67 @@ ApplicationWindow {
                 y: (winn.height-height)/2
                 visible: true;
                 source: "qrc:/b/i/but/start.svg"
-                anchors.centerIn: item1;
+                anchors.centerIn: item_start_q;
                 MouseArea {
                     anchors.fill: parent;
                     z: 1
                     onClicked: {
                         wclick(start_bu_q,function(){
-                            cet.startl(1,function(){
-                                item1.visible=false;
-                                item_ch.visible=true;})
-                            timer0.start()
-                            item2.forceActiveFocus()
-                            timer0.running=true;
+                            switch_effect.startl(1,function(){
+                                item_start_q.visible=false;
+                                item_play_q.visible=true;})
+                            timer_play.start()
+                            item_play_q.forceActiveFocus()
+                            timer_play.running=true;
                         })
 
                     }
                 }
-            }
-            //退出按钮
-            Image {
+            }    
+            Image {//退出按钮
                 id: exit_q
                 source: "qrc:/b/i/but/exit.svg"
-                x:(winn.width-width)/2
-                y:setting.y+75
+                anchors.verticalCenterOffset:150
+                anchors.centerIn: item_start_q;
                 MouseArea {
                     anchors.fill: parent;
                     z: 1
                     onClicked: {
-                        is_ag=false
+                        donot=true
+                        win.visibility=Window.Windowed
                         winn.visible=false
-                        win.width=900
-                        win.height=600
                         start_item.visible=true
-                        item.focus=true
+                        item.forceActiveFocus()
                     }
                 }
             }
-            //设置按钮
-            Image {
+            Image {//设置按钮
                 id: setting
                 source: "qrc:/b/i/but/setting.svg"
-                x:(winn.width-width)/2
-                y:start_bu_q.y+75
+                anchors.verticalCenterOffset:75
+                anchors.centerIn: item_start_q;
+
                 MouseArea {
                     anchors.fill: parent;
                     z: 1
                     onClicked: {
                         wclick(setting,function(){
-                            item3.visible=true
+                            item_setting_q.visible=true
                         })
 
                     }
                 }
             }
         }
-
-        //游戏视图
-        Item {
-            id:item2;
+        Item {//游戏视图
+            id:item_play_q;
             visible: false;
             anchors.fill: parent
             rotation: 0
             focus: true;
-            //背景
+            //游戏背景
             Item {
-                id: item2_back
+                id: item_play_back_q
                 x:0
                 y:0
                 visible: true
@@ -2645,7 +2593,7 @@ ApplicationWindow {
                 Image {
                     width: 2000
                     height: 1400;
-                    source: "qrc:/i/i/playing.png"
+                    source: "qrc:/i/i/play_back.png"
                 }
             }
 
@@ -2675,7 +2623,6 @@ ApplicationWindow {
                         property int ii:0
                         property real di:0
                         onTriggered:{
-                            //console.log("st")
                             var re=(tank_top.rotation-90)*Math.PI/180.0;
                             switch(ii){
                             case 0:
@@ -2705,9 +2652,8 @@ ApplicationWindow {
                                 di=0.5
                                 break
                             default:
-                                bq.source="qrc:/b/i/but/left2.svg"
-                                be.source="qrc:/b/i/but/right2.svg"
-                                bsp
+                                bu_q_q.source="qrc:/b/i/but/q.svg"
+                                bu_e_q.source="qrc:/b/i/but/e.svg"
                                 di=0.5
                                 ii=0
                                 tit.stop()
@@ -2764,9 +2710,8 @@ ApplicationWindow {
                                 di=0.5
                                 break
                             default:
-                                bq.source="qrc:/b/i/but/left2.svg"
-                                be.source="qrc:/b/i/but/right2.svg"
-                                bsp
+                                bu_q_q.source="qrc:/b/i/but/q.svg"
+                                bu_e_q.source="qrc:/b/i/but/e.svg"
                                 di=0
                                 ii=0
                                 tank_top.x=16
@@ -2787,7 +2732,7 @@ ApplicationWindow {
                     id:fir
                     width: 18
                     height: 30
-                    source:"qrc:/ex/i/explo1/f1.png"
+                    source:"qrc:/ex/i/explo/3_1.png"
                     Timer {
                         id:fit
                         interval:30
@@ -2810,19 +2755,19 @@ ApplicationWindow {
                             case 5:
                                 fit.ty=6
                                 fir.visible=true
-                                fir.source="qrc:/ex/i/explo1/f1.png"
+                                fir.source="qrc:/ex/i/explo/3_1.png"
                                 break
                             case 6:
                                 fit.ty=7
-                                fir.source="qrc:/ex/i/explo1/f2.png"
+                                fir.source="qrc:/ex/i/explo/3_2.png"
                                 break
                             case 7:
                                 fit.ty=8
-                                fir.source="qrc:/ex/i/explo1/f3.png"
+                                fir.source="qrc:/ex/i/explo/3_3.png"
                                 break
                             case 8:
                                 fit.ty=9
-                                fir.source="qrc:/ex/i/explo1/f4.png"
+                                fir.source="qrc:/ex/i/explo/3_4.png"
                                 break
                             default:
                                 fit.ty=0
@@ -2832,43 +2777,43 @@ ApplicationWindow {
                     }
                 }
             }
-            //装弹进度
-            Image {
+
+            Image {//装弹进度
                 x:70
                 y:10
                 width: 180
                 height: 50
                 source: "qrc:/i/i/tt.png"
                 Text {
-                            id: tex
+                            id: charge_t_text_q
                             text: qsTr("装弹：0s")
                             anchors.centerIn: parent
                             font.pixelSize:30
                         }
                 }
 
-            //炮弹类型图标兼切换按钮
-            Image {
-                id:br
+
+            Image {//炮弹类型图标兼切换按钮
+                id:bu_ammunition_switch_q
                 width:84
                 height: 59
                 x:winn.width-90
                 y:10
-                source:"qrc:/b/i/but/tobol.svg"
+                source:"qrc:/b/i/but/shells.svg"
                 visible: true
-                property int iss:0
+                property bool type:true//弹药种类：true炮弹|false子弹
                 MouseArea {
                     anchors.fill: parent;
                     z: 1
                     onPressed: {
-                        r=1
+                        r=true
                     }
                 }
             }
-            //设置按钮
-            Image {
-                id: pece
-                source: "qrc:/b/i/but/pause.png"
+
+            Image {//设置按钮
+                id: setting_q
+                source: "qrc:/b/i/but/setting.png"
                 x:10
                 y:10
                 width: 50
@@ -2877,129 +2822,76 @@ ApplicationWindow {
                     anchors.fill: parent;
                     z: 2
                     onClicked: {
-                        item3.visible=true
-                        item3.forceActiveFocus()
+                        item_setting_q.visible=true
                         exit_q2.visible=true
                         menu.visible=true
+                        timer_play.running=false
                     }
                 }
-            }
-            //键盘事件
-            Keys.onPressed:{
-                if(event.key===Qt.Key_A)
-                    a=1;
-                else if(event.key===Qt.Key_D)
-                    d=1;
-                else if(event.key===Qt.Key_W)
-                    w=1;
-                else if(event.key===Qt.Key_S)
-                    s=1;
-                else if(event.key===Qt.Key_Q)
-                    q=1;
-                else if(event.key===Qt.Key_E)
-                    e=1;
-                else if(event.key===Qt.Key_Space)
-                    sp=1;
-                else if(event.key===Qt.Key_R)
-                    r=1
-                else if(event.key===Qt.Key_Escape)
-                {
-                    item3.visible=true
-                    item3.forceActiveFocus()
-                    exit_q2.visible=true
-                    timer0.stop()
-                    menu.visible=true
-                    a=d=w=s=q=e=sp=0
-                }
-            }
-            Keys.onReleased: {
-                if(event.key===Qt.Key_A)
-                    a=0;
-                else if(event.key===Qt.Key_D)
-                    d=0;
-                else if(event.key===Qt.Key_W)
-                    w=0;
-                else if(event.key===Qt.Key_S)
-                    s=0;
-                else if(event.key===Qt.Key_Q)
-                    q=0;
-                else if(event.key===Qt.Key_E)
-                    e=0;
-                else if(event.key===Qt.Key_Space)
-                    sp=0
-            }
-            //按钮
-            Item {
-                id:item_bu
+            }            
+            Item {//操控按钮
+                id:bu_control_q
                 x:0
                 y:0
                 visible: true
                 width: 1000
                 height: 700
-                Image {
-                    id:bw
+                Image {//向前移动按钮
+                    id:bu_w_q
                     width: 62
                     height: 74
                     x:100
                     y:winn.height-180
-                    source: "qrc:/b/i/but/front.svg"
+                    source: "qrc:/b/i/but/w.svg"
                     visible: true
                     MouseArea {
                         anchors.fill: parent;
                         z: 1
-                        Timer {
-                            interval : 40;
-                            repeat : true;
-                        }
                         onPressed: {
-                            var a=bw
-                            a.width=53
-                            a.height=60
-                            a.x+=4.4
-                            a.y+=7
-                            w=1
+                            bu_w_q.width=53
+                            bu_w_q.height=60
+                            bu_w_q.x+=4.4
+                            bu_w_q.y+=7
+                            w=true
                         }
                         onReleased: {
-                            var a=bw
-                            a.width=62
-                            a.height=74
-                            a.x-=4.4
-                            a.y-=7
-                            w=0
+                            bu_w_q.width=62
+                            bu_w_q.height=74
+                            bu_w_q.x-=4.4
+                            bu_w_q.y-=7
+                            w=false
                         }
                     }
                 }
-                Image {
-                    id:ba
+                Image {//向后移动按钮
+                    id:bu_a_q
                     width: 74
                     height: 62
                     x:10
                     y:winn.height-86
-                    source: "qrc:/b/i/but/left.svg"
+                    source: "qrc:/b/i/but/a.svg"
                     visible: true
                     MouseArea {
                         anchors.fill: parent;
                         z: 1
                         onPressed: {
-                            var ai=ba
-                            ai.width=60
-                            ai.height=53
-                            ai.x+=7
-                            ai.y+=4.4
-                            a=1
+                            bu_a_q.width=60
+                            bu_a_q.height=53
+                            bu_a_q.x+=7
+                            bu_a_q.y+=4.4
+                            a=true
                         }
                         onReleased: {
-                            var ai=ba
-                            ai.width=74
-                            ai.height=62
-                            ai.x-=7
-                            ai.y-=4.4
-                            a=0
+                            bu_a_q.width=74
+                            bu_a_q.height=62
+                            bu_a_q.x-=7
+                            bu_a_q.y-=4.4
+                            a=false
                         }
                     }
                 }
-                Image {
-                    id:bs
+                Image {//向左旋转按钮
+                    id:bu_s_q
                     width: 62
                     height: 74
                     x:100
@@ -3010,25 +2902,23 @@ ApplicationWindow {
                         anchors.fill: parent;
                         z: 1
                         onPressed: {
-                            var a=bs
-                            a.width=53
-                            a.height=60
-                            a.x+=4.4
-                            a.y+=7
-                            s=1
+                            bu_s_q.width=53
+                            bu_s_q.height=60
+                            bu_s_q.x+=4.4
+                            bu_a_q.y+=7
+                            s=true
                         }
                         onReleased: {
-                            var a=bs
-                            a.width=62
-                            a.height=74
-                            a.x-=4.4
-                            a.y-=7
-                            s=0
+                            bu_s_q.width=62
+                            bu_s_q.height=74
+                            bu_s_q.x-=4.4
+                            bu_s_q.y-=7
+                            s=false
                         }
                     }
                 }
-                Image {
-                    id:bd
+                Image {//向右旋转按钮
+                    id:bu_d_q
                     width: 74
                     height: 62
                     x:178
@@ -3039,129 +2929,117 @@ ApplicationWindow {
                         anchors.fill: parent;
                         z: 1
                         onPressed: {
-                            var a=bd
-                            a.width=60
-                            a.height=53
-                            a.x+=7
-                            a.y+=4.4
-                            d=1
+                            bu_d_q.width=60
+                            bu_d_q.height=53
+                            bu_d_q.x+=7
+                            bu_d_q.y+=4.4
+                            d=true
                         }
                         onReleased: {
-                            var a=bd
-                            a.width=74
-                            a.height=62
-                            a.x-=7
-                            a.y-=4.4
-                            d=0
+                            bu_d_q.width=74
+                            bu_d_q.height=62
+                            bu_d_q.x-=7
+                            bu_d_q.y-=4.4
+                            d=false
                         }
                     }
                 }
-                Image {
-                    id:bq
+                Image {//向左旋转炮塔按钮
+                    id:bu_q_q
                     width: 74
                     height: 58
                     x:winn.width-194
                     y:winn.height-140
-                    source: "qrc:/b/i/but/left2.svg"
+                    source: "qrc:/b/i/but/q.svg"
                     visible: true
                     MouseArea {
                         anchors.fill: parent;
                         z: 1
                         onPressed: {
-                            if(bq.source=="qrc:/b/i/but/left2_n.svg")
+                            if(bu_q_q.source=="qrc:/b/i/but/q_.svg")
                                 return
-                            var a=bq
-                            a.width=60
-                            a.height=47
-                            a.x+=7
-                            a.y+=5.5
-                            q=1
+                            bu_q_q.width=60
+                            bu_q_q.height=47
+                            bu_q_q.x+=7
+                            bu_q_q.y+=5.5
+                            q=true
                         }
                         onReleased: {
-                            var a=bq
-                            a.width=74
-                            a.height=58
-                            a.x-=7
-                            a.y-=5.5
-                            q=0
+                            bu_q_q.width=74
+                            bu_q_q.height=58
+                            bu_q_q.x-=7
+                            bu_q_q.y-=5.5
+                            q=false
                         }
                     }
                 }
-                Image {
-                    id:be
+                Image {//向右旋转炮塔按钮
+                    id:bu_e_q
                     width: 74
                     height: 58
                     x:winn.width-86
                     y:winn.height-140
-                    source: "qrc:/b/i/but/right2.svg"
+                    source: "qrc:/b/i/but/e.svg"
                     visible: true
                     MouseArea {
                         anchors.fill: parent;
                         z: 1
                         onPressed: {
-                            if(bq.source=="qrc:/b/i/but/left2_n.svg")
+                            if(bu_e_q.source=="qrc:/b/i/but/e_.svg")
                                 return
-                            var a=be
-                            a.width=60
-                            a.height=47
-                            a.x+=7
-                            a.y+=5.5
-                            e=1
+                            bu_e_q.width=60
+                            bu_e_q.height=47
+                            bu_e_q.x+=7
+                            bu_e_q.y+=5.5
+                            e=true
                         }
                         onReleased: {
-                            var a=be
-                            a.width=74
-                            a.height=58
-                            a.x-=7
-                            a.y-=5.5
-                            e=0
+                            bu_e_q.width=74
+                            bu_e_q.height=58
+                            bu_e_q.x-=7
+                            bu_e_q.y-=5.5
+                            e=false
                         }
                     }
                 }
-                Image {
-                    id:bsp
+                Image {//射击按钮
+                    id:bu_space_q
                     width: 158
                     height: 67
                     x:winn.width-183
                     y:winn.height-70
                     source: "qrc:/b/i/but/space.svg"
                     visible: true
-                    property int iss:0
                     MouseArea {
                         anchors.fill: parent;
                         z: 1
                         onPressed: {
-                            if(bsp.iss==0)
+                            if(bu_space_q.source=="qrc:/b/i/but/space.svg")
                             {
-                                sp=1
-                                bsp.iss=1
-                                bsp.source="qrc:/b/i/but/space2.svg"
+                                spase=true
+                                bu_space_q.source="qrc:/b/i/but/space_.svg"
                             }
                         }
                     }
                 }
             }
-        }
-
-        //设置界面
-        Item {
-            id: item3
+        } 
+        Item {//设置界面
+            id: item_setting_q
             width: 600
             height: 600
             x:(winn.width-width)
             y:(winn.height-height)
             visible: false
             z:1
-            anchors.centerIn:item1;
-            //背景
-            Image {
-                id: back1
+            anchors.centerIn:item_start_q
+            Image {//背景
+                anchors.fill: parent;
                 width: 600
                 height: 600
                 source: "qrc:/i/i/back2.png"
             }
-            //退出设置按钮
-            Image {
+            Image {//退出设置按钮
                 id: exit_q_set
                 source: "qrc:/b/i/but/no.png"
                 x:525
@@ -3172,30 +3050,26 @@ ApplicationWindow {
                     anchors.fill: parent;
                     z: 2
                     onClicked: {
-                        if(item2.visible==true)
+                        if(item_setting_q.visible==true)
                         {
-                            item3.visible=false
+                            item_setting_q.visible=false
                             exit_q2.visible=false
-                            item2.forceActiveFocus()
-                            timer0.start()
+                            timer_play.start()
                         }
                         else
-                            item3.visible=false
+                            item_setting_q.visible=false
                     }
                 }
             }
-            //显示控制按钮设置文字
-            Text {
+            Text {//显示控制按钮设置文字
                 x:60
                 y:50
-                id: tx
                 text: qsTr("显示控制按钮")
                 color:"#00FF00"
                 font.pixelSize:30
-            }
-            //显示设置按钮设置按钮
-            Image {
-                id:bss
+            }            
+            Image {//显示设置按钮设置按钮
+                id:set_bu_show_q
                 x:260
                 y:40
                 source: "qrc:/b/i/but/noo.png"
@@ -3205,86 +3079,70 @@ ApplicationWindow {
                     anchors.fill: parent;
                     z: 1
                     onClicked:{
-                            if(bss.source=="qrc:/b/i/but/yes.png")
+                            if(set_bu_show_q.source=="qrc:/b/i/but/yes.png")
                             {
-                                creatbol(275.5,56.5,item3)
-                                bss.source="qrc:/b/i/but/noo.png"
-                                item_bu.visible=false
-                                item2.forceActiveFocus()
+                                create_blast_large(275.5,56.5,item_setting_q)
+                                set_bu_show_q.source="qrc:/b/i/but/noo.png"
+                                bu_control_q.visible=false
                             }
                             else
                             {
-                                bss.source="qrc:/b/i/but/yes.png"
-                                item_bu.visible=true
-                                item2.forceActiveFocus()
+                                set_bu_show_q.source="qrc:/b/i/but/yes.png"
+                                bu_control_q.visible=true
                             }
                     }
                 }
             }
-            //退出游戏按钮
-            Image {
+            Image {//退出游戏按钮
                 id: exit_q2
                 visible: false
                 source: "qrc:/b/i/but/exit.svg"
                 x:10
-                y:item3.height-height
+                y:item_setting_q.height-height
                 MouseArea {
                     anchors.fill: parent;
                     z: 1
                     onClicked: {
-                        is_ag=false
+                        donot=true
+                        win.visibility=Window.Windowed
                         winn.visible=false
-                        win.width=900
-                        win.height=600
                         start_item.visible=true
-                        item.focus=true
+                        item.forceActiveFocus()
                     }
                 }
             }
-            //返回主菜单按钮
-            Image {
+            Image {//返回主菜单按钮
                 id: menu
                 visible: false
                 source: "qrc:/b/i/but/mune.svg"
-                x:item3.width-10-width
-                y:item3.height-height
+                x:item_setting_q.width-10-width
+                y:item_setting_q.height-height
                 MouseArea {
                     anchors.fill: parent;
                     z: 1
                     onClicked: {
                         wclick(exit_q,function(){
-                            cet.startl(2,function(){
-                                item2.visible=false
-                                item3.visible=false
+                            switch_effect.startl(2,function(){
+                                item_setting_q.visible=false
+                                item_play_q.visible=false
                                 exit_q2.visible=false
                                 menu.visible=false
-                                item1.visible=true
-                                timer.stop()
-                                ts=0
+                                item_start_q.visible=true
+                                timer_play.running=false
+                                charge_time=0
                                 issh=0
-                                br.iss=0
-                                tex.text=qsTr("装弹："+ts+"ms")
-                                br.source="qrc:/b/i/but/tobol.svg"
+                                charge_t_text_q.text=qsTr("装弹："+charge_time+"ms")
                             })
                         })
                     }
                 }
             }
-            Keys.onPressed:{
-                if(event.key===Qt.Key_Escape)
-                {
-                    item3.visible=false
-                    exit_q2.visible=false
-                    item2.forceActiveFocus()
-                    timer0.start()
-                }
-            }
         }
-        //切换特效
-        Image {
+        Image {//切换特效
             id: witer
             source: "qrc:/i/i/witer.png"
             x:0
+            anchors.fill: parent;
             y:0
             width: winn.width
             height: winn.height
@@ -3299,7 +3157,7 @@ ApplicationWindow {
                     fun=func
                 }
 
-                id:cet
+                id:switch_effect
                 interval:30
                 repeat:true
                 running:false
@@ -3328,64 +3186,23 @@ ApplicationWindow {
                 }
             }
         }
-        function wclick(ptr,fun){
-            var i=0
-            var j=0.95
-            var x0=ptr.x,y0=ptr.y,w0=ptr.width,h0=ptr.height
-            var t1 = Qt.createQmlObject("import QtQuick 2.12; Timer {}",winn);
-            t1.interval = 40;
-            t1.repeat = true
-            t1.triggered.connect(function(){
-                i++
-                /*ptr.x+=ptr.width*(1-j)
-                ptr.y+=ptr.height*(1-j)
-                ptr.width*=j
-                ptr.height*=j*/
-                if(i===5)
-                {
-                    t1.interval = 100;
-                    fun()
-                }
-                if(i>10)
-                {
-                    t1.stop()
-                    ptr.width=w0
-                    ptr.height=h0
-                    ptr.x=x0
-                    ptr.y=y0
-                }
-            })
-            t1.start()
+    }
+    ApplicationWindow {//帮助窗口
+        visible:false
+        id:help
+        width: 600
+        height:300
+        title: "SnackQML帮助"
+        onWidthChanged: {
+            help.width=600
+        }
+        onHeightChanged: {
+            help.height=264
+        }
+
+        Image {
+            anchors.fill: parent;
+            source: "qrc:/images/images/help.PNG"
         }
     }
-    function wclick(ptr,fun){
-        var i=0
-        var j=0.95
-        var x0=ptr.x,y0=ptr.y,w0=ptr.width,h0=ptr.height
-        var t1 = Qt.createQmlObject("import QtQuick 2.12; Timer {}",winn);
-        t1.interval = 40;
-        t1.repeat = true
-        t1.triggered.connect(function(){
-            i++
-            /*ptr.x+=ptr.width*(1-j)
-            ptr.y+=ptr.height*(1-j)
-            ptr.width*=j
-            ptr.height*=j*/
-            if(i===5)
-            {
-                t1.interval = 100;
-                fun()
-            }
-            if(i>10)
-            {
-                t1.stop()
-                ptr.width=w0
-                ptr.height=h0
-                ptr.x=x0
-                ptr.y=y0
-            }
-        })
-        t1.start()
-    }
-
 }
