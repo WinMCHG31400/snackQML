@@ -31,6 +31,8 @@
         <file>images/agg.PNG</file>
         <file>images/title.png</file>
         <file>images/food_!!!.png</file>
+        <file>images/Qt.png</file>
+        <file>images/back_load.png</file>
     </qresource>
     <qresource prefix="/num">
         <file>images/1.png</file>
