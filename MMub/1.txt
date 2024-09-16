@@ -1,0 +1,122 @@
+    Rectangle{//模式设置
+        y:298
+        x:303
+        width: 194
+        height: 194
+        color:"#FFFF00"
+        Rectangle{
+            y:2
+            x:2
+            width: 190
+            height: 190
+            color: "#FFFF6E"
+            Rectangle {//模式设置按钮
+                id:set_bu_high
+                z:10
+                x:10
+                y:35
+                width: 40
+                height: 120
+                color: "#00EEEE"
+                Text {
+                    id:set_bu_high_text
+                    anchors.centerIn: parent
+                    font.pixelSize: 14
+                    font.bold: true
+                    text: qsTr("普\n通\n模\n式")
+                }
+                MouseArea{
+                    anchors.fill: parent;
+                    onClicked: {
+                        if(commom)
+                            set_type_play(2)
+                        else if(lxj_s==0.85)
+                            set_type_play(1)
+                        else
+                            set_type_play(3)
+                        press_su.play_()
+                    }
+                }
+            }
+            Rectangle {//开局加速设置按钮
+                id:set_bu_fast
+                z:10
+                x:60
+                y:10
+                width: 120
+                height: 50
+                color: "#CDCDC1"
+                Text {
+                    id:set_bu_fast_text
+                    anchors.centerIn: parent
+                    font.pixelSize: 14
+                    font.bold: true
+                    text: qsTr("未开启开局加速")
+                }
+                MouseArea{
+                    anchors.fill: parent;
+                    onClicked: {
+                        if(timer.fast==0)
+                        {
+                            timer.fast+=180
+                            timer.interval=100
+                            speed_text.visible=true
+                            set_bu_fast.color="#00FFFF"
+                            set_bu_fast_text.text="已开启开局加速"
+                        }
+                        else
+                        {
+                            timer.fast=0
+                            timer.interval=200
+                            speed_text.visible=false
+                            set_bu_fast.color="#CDCDC1"
+                            set_bu_fast_text.text="未开启开局加速"
+                        }
+                        press_su.play_()
+                    }
+                }
+            }
+            Rectangle {//开局爬上设置按钮
+                id:set_bu_th
+                z:10
+                x:60
+                y:130
+                width: 120
+                height: 50
+                color: "#CDCDC1"
+                Text {
+                    id:set_bu_th_text
+                    anchors.centerIn: parent
+                    font.pixelSize: 14
+                    font.bold: true
+                    text: qsTr("开局不可爬上自身")
+                }
+                MouseArea{
+                    anchors.fill: parent;
+                    onClicked: {
+                        if(timer.throuth==0)
+                        {
+                            isThro=true
+                            timer.throuth+=180
+                            throuth_text.visible=true
+                            set_bu_th.color="#B200FF"
+                            set_bu_th_text.text="开局可爬上自身"
+                            bu_through.color="#B200FF"
+                            bu_through_bu.text="允许爬上自身"
+                        }
+                        else
+                        {
+                            isThro=false
+                            timer.throuth=0
+                            throuth_text.visible=false
+                            set_bu_th.color="#CDCDC1"
+                            set_bu_th_text.text="开局加可爬上自身"
+                            bu_through.color="#CDCDC1"
+                            bu_through_bu.text="不允许爬上自身"
+                        }
+                        press_su.play_()
+                    }
+                }
+            }
+        }
+    }
