@@ -14,6 +14,9 @@
         <file>MMub/MBar.qml</file>
         <file>MMub/Die.qml</file>
         <file>MMub/Choice.qml</file>
+        <file>MMub/Sett.qml</file>
+        <file>MMub/CBase.qml</file>
+        <file>MMub/Qtinfo.qml</file>
     </qresource>
     <qresource prefix="/images">
         <file>images/back.png</file>

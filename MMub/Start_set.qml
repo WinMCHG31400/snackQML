@@ -256,6 +256,24 @@ Image {
             text:"难度："
             font.pixelSize: 15
         }
+        Item{
+            y:110
+            Text{
+                x:10
+                y:10
+                text:"一触即死:"
+                font.pixelSize: 15
+            }
+            Choice{
+                onChoiceChanged:
+                {
+                    item.candie=choice
+                }
+                x:100
+                y:10
+                id:hard_ch
+            }
+        }
     }
     Image{
         visible: false
@@ -311,7 +329,6 @@ Image {
             font.pixelSize: 15
         }
         Item{
-            visible: false
             y:110
             Text{
                 x:10
@@ -320,9 +337,12 @@ Image {
                 font.pixelSize: 15
             }
             Choice{
-                x:60
-                y:110
-                id:hard_ch
+                onChoiceChanged:
+                {
+                    item.candie=choice
+                }
+                x:100
+                y:10
             }
         }
     }
@@ -351,6 +371,7 @@ Image {
                     item.set_difficulty(difficulty)
                     start_timer3.running=true
                     item.forceActiveFocus()
+                    sett.start()
                     press_su.play_()
                 }
             }

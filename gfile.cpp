@@ -4,6 +4,7 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QTextStream>
+#include "Base.h"
 
 GFile::GFile(QObject *parent) :
     QObject(parent)

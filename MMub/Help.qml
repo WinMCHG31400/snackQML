@@ -3,15 +3,13 @@ import QtQuick
 Window {//帮助窗口
     visible:false
     id:help
-    width: 570
-    height:330
+    width: 750
+    height:350
+    minimumHeight: 350
+    maximumHeight: 350
+    minimumWidth: 750
+    maximumWidth: 750
     title: "SnackQML帮助"
-    onWidthChanged: {
-        help.width=570
-    }
-    onHeightChanged: {
-        help.height=330
-    }
 
     Image {
         anchors.fill: parent;

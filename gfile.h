@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QDir>
+#include "Base.h"
 
 class GFile : public QObject
 {
@@ -20,9 +21,24 @@ public:
     Q_INVOKABLE QString source() { return m_source; }
     QString m_source;
 
+    void restart(){
+        c20=new Base;
+    }
+    int getgold(){
+        return c20->getgold();
+    }
+    bool move(int type){
+        return c20->move(type);
+    }
+    int show(int x, int y){
+        return c20->show(x,y);
+    }
+
 
 signals:
     void sourceChanged(const QString& source);
+private:
+    Base* c20;
 
 
 

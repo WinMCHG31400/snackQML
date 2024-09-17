@@ -138,30 +138,43 @@ Image{//游戏界面
         pp_timer2.running=true
     }
     function set_difficulty(i){
+        sett.setd()
         timer.interval=difficulty=i
     }
-    // function can_ro(i){
-    //     if(snack.num==-1)
-    //         return true
-    //     else
-    //     {
-    //         console.log("123")
-    //         var m=hear.rotation
-    //         var n=true
-    //         if(i==270 && m==90)
-    //                 n=false
-    //         if(i==180)
-    //             if(m==0)
-    //                 n=false
-    //         if(i==90)
-    //             if(m==270)
-    //                 n=false
-    //         if(i==0)
-    //             if(m==180)
-    //                 n=false
-    //         return false
-    //     }
-    // }
+    function diel(){
+        pausen=true
+        die.show(snack.cent+addcent,timer.tt/100)
+    }
+    function fastl()
+    {
+        if(timer.fast>0)
+        {
+            timer.interval=difficulty
+            timer.fast=0
+        }
+        else
+        {
+            item_mm.sp_setText("2147483647")
+            item_mm.sp_visible(true)
+            timer.interval=difficulty/2
+            timer.fast=2147483647
+        }
+    }
+    function throl(){
+        if(timer.throuth>0)
+        {
+            item_mm.th_refuse()
+        }
+        else
+        {
+            timer.throuth=2147483647
+            item_mm.th_allow()
+        }
+    }
+    function regen(){
+        im.destroy()
+        generate_food()
+    }
 
     id:item
     property int x0 //存储生成的食物的位置
@@ -179,7 +192,7 @@ Image{//游戏界面
     property int maxtype:3
     property int smove:0
     property int difficulty:200
-    property bool candie:false
+    property bool candie:true
     visible: false
     opacity: 0
     x:0
@@ -282,18 +295,6 @@ Image{//游戏界面
             }
         }
     }
-    Image {//暂停
-        id: pause_i
-        opacity: 0
-        visible: false
-        x:0
-        y:0
-        z:2147483647
-        source: "qrc:/images/images/pause.png"
-        Exit_item{
-            id:exit_item
-        }
-    }
     Item{//移动按钮
         id:control_bu
         visible: false
@@ -309,7 +310,7 @@ Image{//游戏界面
             MouseArea{
                 anchors.fill: parent;
                 onPressed:
-                    snack.w=1
+                    press_W()
                 onReleased:
                     snack.w=0
             }
@@ -325,7 +326,7 @@ Image{//游戏界面
             MouseArea{
                 anchors.fill: parent;
                 onPressed:
-                    snack.a=1
+                    press_A()
                 onReleased:
                     snack.a=0
             }
@@ -341,7 +342,7 @@ Image{//游戏界面
             MouseArea{
                 anchors.fill: parent;
                 onPressed:
-                    snack.s=1
+                    press_S()
                 onReleased:
                     snack.s=0
             }
@@ -358,7 +359,7 @@ Image{//游戏界面
             MouseArea{
                 anchors.fill: parent;
                 onPressed:
-                    snack.d=1
+                    press_D()
                 onReleased:
                     snack.d=0
             }
@@ -419,7 +420,10 @@ Image{//游戏界面
             repeat: true;
             running:false
             onTriggered:{
-                interval=difficulty
+                if(fast>0)
+                    timer.interval=difficulty/2
+                else
+                    timer.interval=difficulty
                 if(!pausen)
                 {
                     if(smove==1)
@@ -434,6 +438,8 @@ Image{//游戏界面
                                 else
                                     hear.y-=20
                             }
+                            else if(candie)
+                                diel()
                             hear.rotation=270
                             isEat=true
                             break
@@ -444,8 +450,9 @@ Image{//游戏界面
                                     hear.x=780
                                 else
                                     hear.x-=20
-
                             }
+                            else if(candie)
+                                diel()
                             hear.rotation=180
                             isEat=true
                             break
@@ -456,8 +463,9 @@ Image{//游戏界面
                                     hear.y=0
                                 else
                                     hear.y+=20
-
                             }
+                            else if(candie)
+                                diel()
                             hear.rotation=90
                             isEat=true
                             break
@@ -468,8 +476,9 @@ Image{//游戏界面
                                     hear.x=0
                                 else
                                     hear.x+=20
-
                             }
+                            else if(candie)
+                                diel()
                             hear.rotation=0
                             isEat=true
                             break
@@ -484,8 +493,10 @@ Image{//游戏界面
                         item_mm.sp_visible(false)
                         if(type==0 || type==1)
                              timer.interval=200
+                        else
+                            timer.interval=difficulty
                     }
-                    if(smove!=0){
+                    if(smove==0){
                         if(snack.w==1)
                         {
                             if(hear.y>0 && (isThro? true:(!isp(hear.x,hear.y-20)))){
@@ -533,7 +544,7 @@ Image{//游戏界面
                                 timer.fast=2147483647
                             else
                                 timer.fast+=180
-                            timer.interval=100
+                            timer.interval=difficulty/2
                             item_mm.sp_visible(true)
                             break
                         case 10:
@@ -541,7 +552,7 @@ Image{//游戏界面
                                 timer.fast=2147483647
                             else
                                 timer.fast+=1800
-                            timer.interval=100
+                            timer.interval=difficulty/2
                             item_mm.sp_visible(true)
                             break
                         case 2:
@@ -566,7 +577,7 @@ Image{//游戏界面
                                 timer.fast=2147483647
                             else
                                 timer.fast+=180
-                            timer.interval=100
+                            timer.interval=difficulty/2
                             item_mm.sp_visible(true)
                             if(timer.throuth>2147483467)
                                 timer.throuth=2147483647
@@ -611,62 +622,100 @@ Image{//游戏界面
         id:item_mm
     }
 
+    Die{
+        z:2147483647
+        visible: false
+        id:die
+    }
+    Image {//暂停
+        id: pause_i
+        opacity: 0
+        visible: false
+        x:0
+        y:0
+        z:2147483647
+        source: "qrc:/images/images/pause.png"
+        Exit_item{
+            id:exit_item
+        }
+    }
+
+    function press_W()
+    {
+        if(smove==1)
+        {
+            if(snack.num==-1? true:hear.rotation!=90)
+                hear.rotation=270
+        }
+        else
+            snack.w=1;
+    }
+    function press_A()
+    {
+        if(smove==1)
+        {
+            if(snack.num==-1? true:hear.rotation!=0)
+                hear.rotation=180
+        }
+        else
+            snack.a=1
+    }
+    function press_S()
+    {
+        if(smove==1)
+        {
+            if(snack.num==-1? true:hear.rotation!=270)
+                hear.rotation=90
+        }
+        else
+            snack.s=1;
+    }
+    function press_D()
+    {
+        if(smove==1)
+        {
+
+            if(snack.num==-1? true:hear.rotation!=180)
+            {
+                hear.rotation=0
+            }
+        }
+        else
+            snack.d=1;
+    }
+
     Keys.onPressed: {
         if(event.key===Qt.Key_W)
         {
-            if(smove==1)
-                hear.rotation=270
-            else
-                snack.w=1;
+            press_W()
         }
         else if(event.key===Qt.Key_A)
         {
-            if(smove==1)
-                hear.rotation=180
-            else
-                snack.a=1
+            press_A()
         }
         else if(event.key===Qt.Key_S)
         {
-            if(smove==1)
-                hear.rotation=90
-            else
-                snack.s=1;
+            press_S()
         }
         else if(event.key===Qt.Key_D)
         {
-            if(smove==1)
-                hear.rotation=0
-            else
-                snack.d=1;
+            press_D()
         }
         if(event.key===Qt.Key_Up)
         {
-            if(smove==1)
-                hear.rotation=270
-            else
-                snack.w=1;
+            press_W()
         }
         else if(event.key===Qt.Key_Left)
         {
-            if(smove==1)
-                hear.rotation=180
-            else
-                snack.a=1
+            press_A()
         }
         else if(event.key===Qt.Key_Down)
         {
-            if(smove==1)
-                hear.rotation=90
-            else
-                snack.s=1;
+            press_S()
         }
         else if(event.key===Qt.Key_Right)
         {
-            if(smove==1)
-                hear.rotation=0
-            else
-                snack.d=1;
+            press_D()
         }
         if(event.key===Qt.Key_V)
         {
@@ -729,14 +778,14 @@ Image{//游戏界面
         {
             if(timer.fast>0)
             {
-                timer.interval=200
+                timer.interval=difficulty
                 timer.fast=0
             }
             else
             {
                 item_mm.sp_setText("2147483647")
                 item_mm.sp_visible(true)
-                timer.interval=100
+                timer.interval=difficulty/2
                 timer.fast=2147483647
             }
             press_su.play_()
@@ -763,7 +812,20 @@ Image{//游戏界面
             setType(type)
             press_su.play_()
         }
-        else if(event.key===Qt.Key_F4)
+        else if(event.key===Qt.Key_F4 &&control)
+        {
+            im.destroy()
+            generate_food()
+        }
+        else if(event.key===Qt.Key_F5 &&control)
+        {
+
+        }
+        else if(event.key===Qt.Key_F6 &&control)
+        {
+            sett.visible=sett.visible? false:true
+        }
+        else if(event.key===Qt.Key_F7)
         {
             if(win.visibility==Window.Windowed)
             {

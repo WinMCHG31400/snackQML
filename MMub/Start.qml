@@ -60,6 +60,10 @@ Image{//开始界面
         height: 40
         color: "#FFFFFF"
         opacity: 0.6
+        MouseArea{
+            anchors.fill: parent
+            onClicked: qtinfo.visible=true
+        }
     }
     TextInput {
         x:700
@@ -79,10 +83,10 @@ Image{//开始界面
         width: 190
         height: 20
         font.pointSize: 8
-        text: "按F4打开全屏（不是作者说的）"
+        text: "版本：v10"
         onDisplayTextChanged:
         {
-            text="按F4打开全屏"
+            text="版本：v10"
         }
     }
     Rectangle {//显示最高分
@@ -203,5 +207,8 @@ Image{//开始界面
                 Qt.quit()
             }
         }
+    }
+    Qtinfo{
+        id:qtinfo
     }
 }

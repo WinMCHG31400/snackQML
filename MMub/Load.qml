@@ -81,6 +81,7 @@ Image{//加载界面
             onClicked: {
                 if(canStart)
                 {
+                    press_su.play_()
                     start_timer.running=true
                 }
             }
