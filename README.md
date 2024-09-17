@@ -1,2 +1,2 @@
-a snack game made with qml
-一个用qml编写的娱乐性贪吃蛇游戏  
+
+一个用qml编写的贪吃蛇游戏  
