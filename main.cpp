@@ -4,10 +4,11 @@
 #include<gfile.h>
 int main(int argc, char *argv[])
 {
-    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+
+    //qreal a=EnumDisplaySettings(0, ENUM_CURRENT_SETTINGS, &NewDevMode).dmPelsWidth/GetSystemMetrics(SM_CXSCREEN);
+    qputenv("QT_SCALE_FACTOR", "1.0");
 
     QGuiApplication app(argc, argv);
-
     QQmlApplicationEngine engine;
 
     qmlRegisterType<GFile>("GFile",1,2,"GFile");

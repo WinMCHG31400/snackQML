@@ -1,17 +1,15 @@
 pragma ComponentBehavior: Bound
 
-import QtQuick 2.14
-import QtQuick.Controls 2.14
-import GFile 1.2
+import QtQuick
+import QtQuick.Controls
+import GFile
 import QtMultimedia
-import "./MMub"
 
 ApplicationWindow {
     id:win
     //opacity: 0.1
     property string filel       //用于处理文件操作
     property bool doud:true     //是否开启音效
-    //不同种类食物生成概率（上一概率值减当前概率值为实际概率）普通食物实际概率=0.55
     property bool donot:true
     property bool canStart:false
     property bool commom:false

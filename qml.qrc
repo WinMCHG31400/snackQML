@@ -1,22 +1,23 @@
 <RCC>
     <qresource prefix="/">
         <file>Main.qml</file>
-        <file>MMub/Greengame.qml</file>
-        <file>MMub/qmldir</file>
-        <file>MMub/Help.qml</file>
-        <file>MMub/Photo_s.qml</file>
-        <file>MMub/Playing.qml</file>
-        <file>MMub/Exit_item.qml</file>
-        <file>MMub/Faceplate.qml</file>
-        <file>MMub/Load.qml</file>
-        <file>MMub/Start.qml</file>
-        <file>MMub/Start_set.qml</file>
-        <file>MMub/MBar.qml</file>
-        <file>MMub/Die.qml</file>
-        <file>MMub/Choice.qml</file>
-        <file>MMub/Sett.qml</file>
-        <file>MMub/CBase.qml</file>
-        <file>MMub/Qtinfo.qml</file>
+        <file>CBase.qml</file>
+        <file>Choice.qml</file>
+        <file>Die.qml</file>
+        <file>Exit_item.qml</file>
+        <file>Faceplate.qml</file>
+        <file>Greengame.qml</file>
+        <file>Help.qml</file>
+        <file>language.qml</file>
+        <file>Load.qml</file>
+        <file>MBar.qml</file>
+        <file>Photo_s.qml</file>
+        <file>Playing.qml</file>
+        <file>Qtinfo.qml</file>
+        <file>snack.qml</file>
+        <file>Start.qml</file>
+        <file>Start_set.qml</file>
+        <file>Sett.qml</file>
     </qresource>
     <qresource prefix="/images">
         <file>images/back.png</file>
