@@ -1,7 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>Main.qml</file>
-        <file>CBase.qml</file>
         <file>Choice.qml</file>
         <file>Die.qml</file>
         <file>Exit_item.qml</file>
