@@ -161,30 +161,30 @@ Image {
                 }
             }
         }
-        Rectangle{//自定义模式
-            id:user
-            x:400
-            width: 100
-            height:40
-            color:"#CDC5BF"
-            Text{
-                anchors.centerIn:parent
-                font.pixelSize: 15
-                text:"困难模式"
-                horizontalAlignment: Text.AlignHCenter
-            }
-            MouseArea{
-                anchors.fill: parent
-                onClicked: {
-                    allhide()
-                    hard.color="#FF0000"
-                    hard_.visible=true
-                    item.setType(3)
-                    item.smove=1
-                    item.set_difficulty(100)
-                }
-            }
-        }
+        // Rectangle{//自定义模式
+        //     id:user
+        //     x:400
+        //     width: 100
+        //     height:40
+        //     color:"#CDC5BF"
+        //     Text{
+        //         anchors.centerIn:parent
+        //         font.pixelSize: 15
+        //         text:"困难模式"
+        //         horizontalAlignment: Text.AlignHCenter
+        //     }
+        //     MouseArea{
+        //         anchors.fill: parent
+        //         onClicked: {
+        //             allhide()
+        //             hard.color="#FF0000"
+        //             hard_.visible=true
+        //             item.setType(3)
+        //             item.smove=1
+        //             item.set_difficulty(100)
+        //         }
+        //     }
+        //}
     }
     Image{
         id:common_
