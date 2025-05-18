@@ -83,10 +83,10 @@ Image{//开始界面
         width: 190
         height: 20
         font.pointSize: 8
-        text: "版本：v10"
+        text: "版本：v13"
         onDisplayTextChanged:
         {
-            text="版本：v10"
+            text="版本：v13"
         }
     }
     Rectangle {//显示最高分
