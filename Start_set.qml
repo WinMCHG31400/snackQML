@@ -247,33 +247,21 @@ Image {
                 font.pixelSize: 15
             }
         }
-        Text{
-            id:a
-            x:320
-            y:70
-            text:"120"
-            font.pixelSize: 20
-        }
-
-        ScrollBar{
-            rotation: 180
-            onPositionChanged: {
-                difficulty=200*position+20
-                a.text=difficulty
+        CscrollBar{
+            onValueChanged: {
+                difficulty=200*value+20
                 item.set_difficulty(difficulty)
             }
-            position: 0.5
-            id:typical_bar
-            hoverEnabled: true
-            active:hovered || pressed
-            orientation:Qt.Horizontal
-            width: 200
-            height: 30
-            stepSize: 0.005
-            snapMode: ScrollBar.SnapAlways
-            x:100
+            Component.onCompleted: setValue(0.5)
+            x:70
             y:70
+            width: 250
+            height: 20
+            step: 0.005
+
+            id:typical_bar
         }
+
         Text{
             x:10
             y:73
@@ -319,32 +307,18 @@ Image {
                 font.pixelSize: 15
             }
         }
-        Text{
-            id:aa
-            x:320
-            y:70
-            text:"85"
-            font.pixelSize: 20
-        }
-
-        ScrollBar{
-            rotation: 180
-            onPositionChanged: {
-                difficulty=150*position+10
-                aa.text=difficulty
+        CscrollBar{
+            onValueChanged: {
+                difficulty=200*value+20
                 item.set_difficulty(difficulty)
             }
-            position: 0.5
-            id:hard_bar
-            hoverEnabled: true
-            active:hovered || pressed
-            orientation:Qt.Horizontal
-            width: 200
-            height: 30
-            stepSize: 0.005
-            snapMode: ScrollBar.SnapAlways
-            x:100
+            Component.onCompleted: setValue(0.5)
+            x:70
             y:70
+            width: 250
+            height: 20
+            step: 0.005
+            id:hard_bar
         }
         Text{
             x:10

@@ -18,6 +18,9 @@
         <file>Start.qml</file>
         <file>Start_set.qml</file>
         <file>Sett.qml</file>
+        <file>CscrollBar.qml</file>
+        <file>Cbutton.qml</file>
+        <file>ImaButton.qml</file>
     </qresource>
     <qresource prefix="/images">
         <file>images/back.png</file>
