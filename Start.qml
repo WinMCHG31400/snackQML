@@ -149,12 +149,19 @@ Image{//开始界面
         }
     }
 
-    Image {//开始"游戏"按钮
+    Rectangle {//开始"游戏"按钮
         x:85
         y:515
         width: 730
         height: 85
-        source: "qrc:/images/images/agg.PNG"
+        color:"#20808080"
+        Text {
+            anchors.centerIn: parent
+            font.pixelSize: 20
+            font.bold: true
+            horizontalAlignment: Text.AlignHCenter
+            text: qsTr("GL-qml")
+        }
         MouseArea{
             anchors.fill: parent;
             onClicked: {
