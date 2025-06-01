@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include <QDir>
-#include "Base.h"
+#include <QProcess>
 
 class GFile : public QObject
 {
@@ -19,29 +19,17 @@ public:
     Q_INVOKABLE QString getUser();
     Q_INVOKABLE void setSource(const QString& source) { m_source = source; };
     Q_INVOKABLE QString source() { return m_source; }
+    Q_INVOKABLE void del(){QFile::remove(m_source);}
+    Q_INVOKABLE qreal getSysScale(){return 0;}
+    Q_INVOKABLE void start(){program.start(m_source);}
+    Q_INVOKABLE void restart();
     QString m_source;
-
-    void restart(){
-        c20=new Base;
-    }
-    int getgold(){
-        return c20->getgold();
-    }
-    bool move(int type){
-        return c20->move(type);
-    }
-    int show(int x, int y){
-        return c20->show(x,y);
-    }
 
 
 signals:
     void sourceChanged(const QString& source);
 private:
-    Base* c20;
-
-
-
+    QProcess program;
 };
 
-#endif // FILE_OBJECT_H
+#endif

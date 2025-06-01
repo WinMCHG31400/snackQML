@@ -9,10 +9,10 @@ Window {//帮助窗口
     maximumHeight: 350
     minimumWidth: 750
     maximumWidth: 750
-    title: "SnackQML帮助"
+    title: $enMode?"SnackQML Help":"SnackQML帮助"
 
     Image {
         anchors.fill: parent;
-        source: "qrc:/images/images/help.PNG"
+        source: $enMode?"./images./help_en.png":"./images/help.PNG"
     }
 }

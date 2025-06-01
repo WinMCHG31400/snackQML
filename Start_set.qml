@@ -2,377 +2,372 @@ import QtQuick
 import QtQuick.Controls
 
 
-Image {
+Rectangle {
     function allhide(){
         difficulty=200
-        high.color="#CDC5BF"
-        typical.color="#CDC5BF"
-        common.color="#CDC5BF"
-        hard.color="#CDC5BF"
-        high_.visible=false
-        common_.visible=false
-        typical_.visible=false
-        hard_.visible=false
+        common.checked=high.checked=typical.checked=hard.checked=false
     }
-    z:113115
-    Timer{
-        id:start_timer3
-        interval: 10
-        repeat: true
-        running: false
-        onTriggered: {
-            if(start_set.opacity>0)
-                start_set.opacity-=0.01
-            else
-            {
-                start_set.visible=false
-                item.visible=true
-                start_timer4.running=true
-                item.continua()
-            }
-        }
-    }
-    Timer{
-        id:start_timer4
-        interval: 10
-        repeat: true
-        running: false
-        onTriggered: {
-            if(item.opacity<1)
-                item.opacity+=0.01
-            else
-                start_timer4.running=false
-        }
-    }
+    id:root
     property int difficulty:200;
     property int aaa
+    width: 600
+    height: 390
+    enabled: false
     visible: false
     opacity: 0
-    anchors.verticalCenterOffset: 0
-    anchors.horizontalCenterOffset: 0
+    color:"#77ffffff"
+    border.color: "#88FFFF00"
+    border.width: 2
+    radius: 20
     anchors.centerIn:parent
-    width: 600
-    height: 400
-    source:"qrc:/images/images/pause.png"
+    property int next_type:2
+    property bool next:false
+    onEnabledChanged:{
+        if(enabled)
+        {
+            root.visible=true
+        }
+    }
+    NumberAnimation  on opacity {
+        running: next
+        duration: 1350
+        easing.type: Easing.InOutQuad
+        easing.overshoot: 1.0
+        to: 0
+        onStopped: {
+            root.enabled=false
+            root.visible=false
+            next=false
+            $win.next(next_type)
+        }
+    }
+    NumberAnimation  on opacity {
+        running: enabled
+        duration: 1350
+        easing.type: Easing.InOutQuad
+        easing.overshoot: 1.0
+        to: 1.0
+    }
+    Text{
+        x:20
+        y:15
+        width: 60
+        height: 40
+        font.pixelSize: 25
+        text:$enMode?"Game Mode:":"游戏模式："
+        font.bold: true
+    }
     Item{//模式
         width: 500
         height:40
+        z:2
         anchors.verticalCenterOffset: -120
         anchors.horizontalCenterOffset: -50
         anchors.centerIn:parent
         id:game_mode
-        Text{
-            x:30
-            y:10
-            width: 60
-            height: 40
-            font.pixelSize: 15
-            text:"游戏模式："
-
-        }
-        Rectangle{//普通模式
+        Cbutton{//普通模式
+            type:4
             id:common
             x:100
             width: 100
             height:40
-            color:"#FFD700"
+            checkable: true
+            checked: true
+            colorBorder: "#00000000"
+            colorBg:checked?"#FFD700":"#CDC5BF"
             Text{
                 anchors.centerIn:parent
                 font.pixelSize: 15
-                text:"普通模式"
+                text:$enMode?"Common":"普通模式"
                 horizontalAlignment: Text.AlignHCenter
             }
-            MouseArea{
-                anchors.fill: parent
-                onClicked: {
-                    allhide()
-                    common_.visible=true
-                    common.color="#FFD700"
-                    item.setType(0)
-                }
+            onClicked:
+            {
+                allhide()
+                checked=true
+                $item.setType(0)
             }
         }
-        Rectangle{//高概率模式
+        Cbutton{//高概率模式
+            type:4
             id:high
             x:200
             width: 100
             height:40
-            color:"#CDC5BF"
+            checkable: true
+            colorBorder: "#00000000"
+            colorBg:checked?"#00FFFF":"#CDC5BF"
             Text{
                 anchors.centerIn:parent
                 font.pixelSize: 15
-                text:"高概率模式"
+                text:$enMode?"High Odds":"高概率模式"
                 horizontalAlignment: Text.AlignHCenter
             }
-            MouseArea{
-                anchors.fill: parent
-                onClicked: {
-                    allhide()
-                    high_.visible=true
-                    high.color="#00FFFF"
-                    item.setType(1)
-                }
+            onClicked:
+            {
+                allhide()
+                checked=true
+                $item.setType(1)
             }
         }
-        Rectangle{//经典模式
+        Cbutton{//经典模式
+            type:4
             id:typical
             x:300
             width: 100
             height:40
-            color:"#CDC5BF"
+            checkable: true
+            colorBorder: "#00000000"
+            colorBg:checked?"#FFFAFA":"#CDC5BF"
             Text{
                 anchors.centerIn:parent
                 font.pixelSize: 15
-                text:"经典模式"
+                text:$enMode?"Typical":"经典模式"
                 horizontalAlignment: Text.AlignHCenter
             }
-            MouseArea{
-                anchors.fill: parent
-                onClicked: {
-                    allhide()
-                    typical.color="#FFFAFA"
-                    typical_.visible=true
-                    item.setType(2)
-                    item.smove=1
-                }
+            onClicked:
+            {
+                allhide()
+                checked=true
+                $item.setType(2)
             }
         }
-        Rectangle{//困难模式
+        Cbutton{//困难模式
+            type:4
             id:hard
             x:400
             width: 100
             height:40
-            color:"#CDC5BF"
+            checkable: true
+            colorBorder: "#00000000"
+            colorBg:checked?"#FF0000":"#CDC5BF"
             Text{
                 anchors.centerIn:parent
                 font.pixelSize: 15
-                text:"困难模式"
+                text:$enMode?"Hard":"困难模式"
                 horizontalAlignment: Text.AlignHCenter
             }
-            MouseArea{
-                anchors.fill: parent
-                onClicked: {
-                    allhide()
-                    hard.color="#FF0000"
-                    hard_.visible=true
-                    item.setType(3)
-                    item.smove=1
-                    item.set_difficulty(100)
-                }
+            onClicked:
+            {
+                allhide()
+                checked=true
+                $item.setType(3)
+                $item.set_difficulty(100)
             }
         }
-        // Rectangle{//自定义模式
-        //     id:user
-        //     x:400
-        //     width: 100
-        //     height:40
-        //     color:"#CDC5BF"
-        //     Text{
-        //         anchors.centerIn:parent
-        //         font.pixelSize: 15
-        //         text:"困难模式"
-        //         horizontalAlignment: Text.AlignHCenter
-        //     }
-        //     MouseArea{
-        //         anchors.fill: parent
-        //         onClicked: {
-        //             allhide()
-        //             hard.color="#FF0000"
-        //             hard_.visible=true
-        //             item.setType(3)
-        //             item.smove=1
-        //             item.set_difficulty(100)
-        //         }
-        //     }
-        //}
     }
-    Image{
+    Rectangle{
+        x:100
+        y:90
+        radius: 10
+        width: 400
+        height:240
+        color:"#00000000"
+        border.color: "#FFFF00"
+        border.width: 2
+        visible: common.checked
         id:common_
-        x:100
-        y:100
-        width: 400
-        height:200
-        source: "qrc:/images/images/pause.png"
         Item{
             x:10
             y:10
             width: 380
             height: 40
             Text{
-                text:"SnackQml最原始的游戏模式，蛇只会在你控制时移动，会生成多种食物"
+                text:$enMode?"The origin mode of SnackQml,the snake will move when you control,several types of food will be generated":"SnackQml最原始的游戏模式，蛇只会在你控制时移动，会生成多种食物"
                 wrapMode: Text.WordWrap
                 anchors.fill: parent
                 font.pixelSize: 15
             }
         }
     }
-    Image{
-        visible: false
+    Rectangle{
+        x:100
+        y:90
+        radius: 10
+        width: 400
+        height:240
+        color:"#00000000"
+        border.color: "#FFFF00"
+        border.width: 2
+        visible: high.checked
         id:high_
-        x:100
-        y:100
-        source: "qrc:/images/images/pause.png"
-        width: 400
-        height:200
         Item{
             x:10
             y:10
             width: 380
             height: 40
             Text{
-                text:"有普通模式衍生出的一个游戏模式，蛇只会在你控制时移动，会生成多种食物，同时稀有食物的生成概率增加"
+                text:$enMode?"A mode fork from common,,the snake will move when you control,several types of food will be generated,but the probability to generate rare food will be raised":"由普通模式衍生出的一个游戏模式，蛇只会在你控制时移动，会生成多种食物，同时稀有食物的生成概率增加"
                 wrapMode: Text.WordWrap
                 anchors.fill: parent
                 font.pixelSize: 15
             }
         }
     }
-    Image{
-        visible: false
+    Rectangle{
+        x:100
+        y:90
+        radius: 10
+        width: 400
+        height:240
+        color:"#00000000"
+        border.color: "#FFFF00"
+        border.width: 2
+        visible: typical.checked
         id:typical_
-        width: 400
-        x:100
-        y:100
-        source: "qrc:/images/images/pause.png"
-        height:200
         Item{
             x:10
             y:10
             width: 380
             height: 40
             Text{
-                text:"经典的游戏模式，蛇会实时移动，只会生成普通食物，地图上下左右贯通\n数字越小难度越大(其实就是计时器的间隔)"
+                text:$enMode?"The typical game mode,the snake will move everytiem,only the common type food will be generate,you can throngh the map's border to opppsite border.smaller the number is,more difficult thee game will be":"经典的游戏模式，蛇会实时移动，只会生成普通食物，地图上下左右贯通\n数字越小难度越大(其实就是计时器的间隔)"
                 wrapMode: Text.WordWrap
                 anchors.fill: parent
                 font.pixelSize: 15
             }
         }
-        CscrollBar{
-            onValueChanged: {
-                difficulty=200*value+20
-                item.set_difficulty(difficulty)
-            }
-            Component.onCompleted: setValue(0.5)
-            x:70
-            y:70
-            width: 250
-            height: 20
-            step: 0.005
-
-            id:typical_bar
-        }
-
-        Text{
-            x:10
-            y:73
-            text:"难度："
-            font.pixelSize: 15
-        }
         Item{
-            y:110
+            y:$enMode?140:70
+            CscrollBar{
+                onValueChanged: {
+                    $item.set_difficulty(value)
+                }
+                Component.onCompleted: setValue(100)
+                x:70
+                width: 250
+                height: 20
+                minValue: 10
+                maxValue: 200
+                step: 1
+                id:typical_bar
+            }
             Text{
                 x:10
-                y:10
-                text:"一触即死:"
+                y:3
+                text:$enMode?"Difficulty":"难度："
                 font.pixelSize: 15
             }
-            Choice{
-                onChoiceChanged:
-                {
-                    item.candie=choice
+            Item{
+                y:40
+                Text{
+                    x:10
+                    y:10
+                    text:$enMode?"Die On Touch":"一触即死:"
+                    font.pixelSize: 15
                 }
-                x:100
-                y:10
-                id:hard_ch
+                Choice{
+                    onChoiceChanged:
+                    {
+                        $item.candie=choice
+                    }
+                    x:$enMode?120:100
+                    y:10
+                    id:hard_ch
+                }
             }
         }
     }
-    Image{
-        visible: false
+    Rectangle{
+        x:100
+        y:90
+        radius: 10
+        width: 400
+        height:240
+        color:"#00000000"
+        border.color: "#FFFF00"
+        border.width: 2
+        visible: hard.checked
         id:hard_
-        width: 400
-        height:200
-        source: "qrc:/images/images/pause.png"
-        x:100
-        y:100
         Item{
             x:10
             y:10
             width: 380
             height: 40
             Text{
-                text:"由普通模式和经典模式结合成的一个模式，蛇会实时移动，默认移动速度较快，会生成多种食物，地图上下左右贯通,数字越小难度越大(其实就是计时器的间隔)"
+                text:$enMode?"A mode fixed with the common mode and the typical mode,the snake will move everytiem,several types of food will be generated,,you can throngh the map's border to opppsite border.smaller the number is,more difficult thee game will be":"由普通模式和经典模式结合成的一个模式，蛇会实时移动，默认移动速度较快，会生成多种食物，地图上下左右贯通,数字越小难度越大(其实就是计时器的间隔)"
                 wrapMode: Text.WordWrap
                 anchors.fill: parent
                 font.pixelSize: 15
             }
         }
-        CscrollBar{
-            onValueChanged: {
-                difficulty=200*value+20
-                item.set_difficulty(difficulty)
-            }
-            Component.onCompleted: setValue(0.5)
-            x:70
-            y:70
-            width: 250
-            height: 20
-            step: 0.005
-            id:hard_bar
-        }
-        Text{
-            x:10
-            y:73
-            text:"难度："
-            font.pixelSize: 15
-        }
         Item{
-            y:110
+            y:$enMode?140:70
+            CscrollBar{
+                onValueChanged: {
+                    $item.set_difficulty(value)
+                }
+                Component.onCompleted: setValue(100)
+                x:70
+                width: 250
+                height: 20
+                step: 1
+                minValue: 10
+                maxValue: 200
+                id:hard_bar
+            }
             Text{
                 x:10
-                y:10
-                text:"一触即死:"
+                y:3
+                text:$enMode?"Difficulty":"难度："
                 font.pixelSize: 15
             }
-            Choice{
-                onChoiceChanged:
-                {
-                    item.candie=choice
+            Item{
+                y:40
+                Text{
+                    x:10
+                    y:10
+                    text:$enMode?"Die On Touch":"一触即死:"
+                    font.pixelSize: 15
                 }
-                x:100
-                y:10
+                Choice{
+                    onChoiceChanged:
+                    {
+                        $item.candie=choice
+                    }
+                    x:$enMode?120:100
+                    y:10
+                }
             }
         }
+
     }
-
-
-    Rectangle {//开始游戏按钮
-        id:start_bu
-        anchors.verticalCenterOffset: 130
-        anchors.horizontalCenterOffset: 100
-        anchors.centerIn:parent
-        z:10
+    Cbutton{
+        radiusBg: 10
+        type:4
         width: 150
         height: 40
-        color: "#EEEE00"
-        Text {
-            anchors.centerIn: parent
-            font.pixelSize: 20
-            font.bold: true
-            text: qsTr("开始游戏")
+        text: $enMode?"Back":"返回"
+        font.pixelSize: 20
+        x:10
+        y:340
+        colorBg_common: "#EEEE00"
+        colorBg_down: "#DDDD00"
+        colorBg_hovered: "#FFFF00"
+        colorBorder: "#00000000"
+        colorText: "#000000"
+        onClicked: {
+            next_type=0
+            next=true
         }
-        MouseArea{
-            anchors.fill: parent;
-            onClicked: {
-                if(start_set.opacity===1)
-                {
-                    item.set_difficulty(difficulty)
-                    start_timer3.running=true
-                    item.forceActiveFocus()
-                    sett.start()
-                    press_su.play_()
-                }
-            }
+    }
+    Cbutton{
+        radiusBg: 10
+        type:4
+        width: 150
+        height: 40
+        text: $enMode?"Start":"开始游戏"
+        font.pixelSize: 20
+        x:440
+        y:340
+        colorBg_common: "#EEEE00"
+        colorBg_down: "#DDDD00"
+        colorBg_hovered: "#FFFF00"
+        colorBorder: "#00000000"
+        colorText: "#000000"
+        onClicked: {
+            next_type=2
+            next=true
         }
     }
 }

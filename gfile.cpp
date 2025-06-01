@@ -4,8 +4,6 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QTextStream>
-#include "Base.h"
-
 GFile::GFile(QObject *parent) :
     QObject(parent)
 {
@@ -54,4 +52,11 @@ void GFile::create(const QString &source)
 QString GFile::getUser()
 {
     return QDir::home().dirName();
+}
+
+void GFile::restart()
+{
+    program.start("./start.bat");
+    program.waitForFinished();
+    exit(0);
 }

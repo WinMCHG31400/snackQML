@@ -9,11 +9,17 @@ ApplicationWindow {
     id:win
     //opacity: 0.1
     property string filel       //用于处理文件操作
-    property bool doud:true     //是否开启音效
+    property bool $doud:true     //是否开启音效
     property bool donot:true
     property bool canStart:false
     property bool commom:false
     property bool pausen:false
+    property var $win:win
+    property var $item:item
+    property bool $enMode:false
+    property int $fast
+    property int $through
+    property int $control
     visible: true
     minimumHeight: 600
     maximumHeight: 600
@@ -22,29 +28,17 @@ ApplicationWindow {
     width: 900
     height: 600
     title: "SnackQML"
-    function set_item(item_a,item_b,fun_1,fun_2){
-        var timer = Qt.createQmlObject("import QtQuick 2.14; Timer {}", win);
-        timer.repeat = true;
-        timer.interval = 10;
-        timer.triggered.connect(function(){
-            if(item_a.opacity>0)
-                item_a.opacity-=0.01
-            else
-            {
-                fun_1()
-                item_a.visible=false
-                item_b.visible=true
-                triggered.connect(function(){
-                    if(item_b.opacity<1)
-                        item_b.opacity+=0.01
-                    else
-                    {
-                        fun_2()
-                        this.destroy()
-                    }
-                })
-            }
-        })
+    function next(code)
+    {
+        switch(code)
+        {
+        case 0:start_item.enabled=true
+            break;
+        case 1:start_set.enabled=true
+            break;
+        case 2:item.enabled=true
+            break;
+        }
     }
 
     GFile{
@@ -52,50 +46,31 @@ ApplicationWindow {
     }
     SoundEffect{//按键音效
         id:press_su
-        source: "qrc:/images/raw/click.wav"
+        source: "./raw/click.wav"
         function play_()
         {
-            if(doud) press_su.play()
+            if($doud) press_su.play()
         }
     }
     SoundEffect{//吃到食物音效
         id:move_ea
-        source: "qrc:/images/raw/eat.wav"
+        source: "./raw/eat.wav"
     }
     Image{
         anchors.fill: parent
-        source: "qrc:/images/images/back_load.png"
-        Image{
-            anchors.fill: parent
-            source: "qrc:/images/images/pause.png"
-        }
-    }
-    Sett{
-        id:sett
-    }
-
-    Load{
-        id:load_item
-    }
-
-    Playing{
-        id:item
+        source: "./images/back_load.png"
     }
     Start{
         id:start_item
-    }
-
-    Photo_s{
-        id:photo
-    }
-
-    Help{
-        id:help
-    }
-    Greengame{
-        id:winn
+        anchors.fill:parent
     }
     Start_set{
         id:start_set
+    }
+    Playing{
+        id:item
+    }
+    Help{
+        id:help
     }
 }

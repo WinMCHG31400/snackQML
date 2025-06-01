@@ -23,7 +23,7 @@ Item {
         Text{
             anchors.centerIn:parent
             font.pixelSize: 15
-            text:"开启"
+            text:$enMode?"Yes":"开启"
             horizontalAlignment: Text.AlignHCenter
         }
         MouseArea{
@@ -44,7 +44,7 @@ Item {
         Text{
             anchors.centerIn:parent
             font.pixelSize: 15
-            text:"关闭"
+            text:$enMode?"No":"关闭"
             horizontalAlignment: Text.AlignHCenter
         }
         MouseArea{

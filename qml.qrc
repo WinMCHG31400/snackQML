@@ -1,14 +1,12 @@
 <RCC>
     <qresource prefix="/">
         <file>Main.qml</file>
-        <file>CBase.qml</file>
         <file>Choice.qml</file>
         <file>Die.qml</file>
         <file>Exit_item.qml</file>
         <file>Faceplate.qml</file>
         <file>Greengame.qml</file>
         <file>Help.qml</file>
-        <file>language.qml</file>
         <file>Load.qml</file>
         <file>MBar.qml</file>
         <file>Photo_s.qml</file>

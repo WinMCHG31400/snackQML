@@ -20,6 +20,7 @@ Button {
     bottomPadding: 0
     contentItem: Rectangle{
         scale: 0.5
+        color:"#00000000"
         Image {
             id:img_
             anchors.centerIn:parent
@@ -45,7 +46,7 @@ Button {
             radius:control.radiusBg
             border.width: 1
             border.color: control.enabled ? control.colorBorder : "transparent"
-
+            color:"#00000000"
             property real realWidth: parent.width
             property real realHeight: parent.height
         }
@@ -57,7 +58,7 @@ Button {
     ToolTip{
         id:tt
         background: Rectangle{
-            color: "white"
+            color: "#ffffff"
             anchors.fill: parent
             border.color: "black"
         }

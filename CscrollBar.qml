@@ -3,18 +3,18 @@ import QtQuick.Controls
 import QtQuick.Window
 
 Item{
-    id:pickerItem
-    property real value:slider.value
+    id:root
+    property real value:slider.value*(maxValue-minValue)+minValue
     property real maxValue:100
     property real minValue:0
     property string text
-    property real step:0.01
+    property real step:1
     property real reset:-1
+    property int text_width:30
     onTextChanged: text_.text=text
     function setValue(vl){
-        slider.x = Math.max(0,vl*(pickerItem_.width-slider.width))
+        slider.x = Math.max(0,(vl-minValue)/(maxValue-minValue)*(pickerItem_.width-slider.width))
     }
-
     Text{
         id:text_
         text:text
@@ -22,10 +22,10 @@ Item{
         y:-2
     }
     Cbutton{
-        x:30
+        x:text_width
         radiusBg:0
         width: 10
-        height: pickerItem.height
+        height: root.height
         text:"<"
         font.pixelSize: 10
         padding: 0
@@ -36,10 +36,10 @@ Item{
     }
     Cbutton{
         id:bur
-        x:pickerItem.width-55
+        x:root.width-45-(reset==-1?0:root.height)
         radiusBg:0
         width: 10
-        height: pickerItem.height
+        height: root.height
         text:">"
         font.pixelSize: 10
         padding: 0
@@ -50,14 +50,13 @@ Item{
     }
     Item {
         id: pickerItem_
-        width: pickerItem.width-95
-        height: pickerItem.height
-        x:40
+        width: root.width-text_width-55-(reset==-1?0:root.height)
+        height: root.height
+        x:text_width+10
         y:0
         Rectangle {
             anchors.fill: parent
             border.color: "#80808080"
-            color:"#00000000"
             border.width: 2
             ToolTip.visible: false
         }
@@ -96,11 +95,11 @@ Item{
     }
     Rectangle{
         id:shvr
-        x:pickerItem.width-45
+        x:root.width-35-(reset==-1?0:15)
         y:0
         z:-1
         width: 35
-        height: pickerItem.height
+        height: root.height
         color:Qt.rgba(0.8,0.8,0.8)
         Text{
             anchors.fill: parent
@@ -111,14 +110,14 @@ Item{
             verticalAlignment: Text.AlignVCenter
         }
     }
-    Cbutton{
+    ImaButton{
         radiusBg: 0
         id:reseter
-        text:"R"
-        x:pickerItem.width-10
-        visible: false
-        width: 15
-        height: 15
+        img:"./images/reset.png"
+        x:root.width-15
+        visible: reset!=-1
+        width: root.height
+        height: root.height
         onClicked: setValue(reset)
         toolTipText: "重置"
     }
