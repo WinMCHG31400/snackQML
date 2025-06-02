@@ -11,7 +11,9 @@ Item{
     property real step:1
     property real reset:-1
     property int text_width:30
+    property int value_width:35
     onTextChanged: text_.text=text
+    property bool click:false
     function setValue(vl){
         slider.x = Math.max(0,(vl-minValue)/(maxValue-minValue)*(pickerItem_.width-slider.width))
     }
@@ -19,6 +21,10 @@ Item{
         id:text_
         text:text
         font.pixelSize: 14
+        width: text_width
+        height: root.height
+        verticalAlignment: Text.AlignVCenter
+        horizontalAlignment: Text.AlignHCenter
         y:-2
     }
     Cbutton{
@@ -36,7 +42,7 @@ Item{
     }
     Cbutton{
         id:bur
-        x:root.width-45-(reset==-1?0:root.height)
+        x:root.width-10-value_width-(reset==-1?0:root.height)
         radiusBg:0
         width: 10
         height: root.height
@@ -50,7 +56,7 @@ Item{
     }
     Item {
         id: pickerItem_
-        width: root.width-text_width-55-(reset==-1?0:root.height)
+        width: root.width-text_width-20-value_width-(reset==-1?0:root.height)
         height: root.height
         x:text_width+10
         y:0
@@ -81,6 +87,7 @@ Item{
             }
             onPressed: (mouse) => {
                            handleCursorPos(mouse.x, mouse.y);
+                           click=!click
                        }
             onPositionChanged: (mouse) => handleCursorPos(mouse.x);
             onWheel:(wheel)=>{
@@ -95,10 +102,10 @@ Item{
     }
     Rectangle{
         id:shvr
-        x:root.width-35-(reset==-1?0:15)
+        x:root.width-value_width-(reset==-1?0:15)
         y:0
         z:-1
-        width: 35
+        width: value_width
         height: root.height
         color:Qt.rgba(0.8,0.8,0.8)
         Text{

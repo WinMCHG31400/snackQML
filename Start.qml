@@ -21,7 +21,13 @@ Item{//开始界面
         onStopped: {
             switch(next_type)
             {
-            case -1:Qt.exit(0)
+            case -1:Qt.exit(0);
+            case 1:
+                root.enabled=false
+                root.visible=false
+                next=false
+                $win.next(2)
+                break
             case 0:;
             }
             root.enabled=false
@@ -77,6 +83,73 @@ Item{//开始界面
         colorText: "#000000"
         onClicked: {
             next_type=0
+            next=true
+        }
+    }
+    Cbutton{
+        NumberAnimation  on opacity {
+            running: root.enabled
+            duration: 1350
+            easing.type: Easing.InCubic
+            easing.overshoot: 1.0
+            to: 1.0
+        }
+        NumberAnimation  on opacity {
+            running: next
+            duration: 1350
+            easing.type: Easing.InCubic
+            easing.overshoot: 1.0
+            to: 0
+        }
+        radiusBg: 10
+        type:4
+        width: 150
+        height: 50
+        text: $enMode?"Load":"加载游戏"
+        font.pixelSize: 25
+        anchors.centerIn: parent
+        anchors.verticalCenterOffset: 70
+        colorBg_common: "#EEEE00"
+        colorBg_down: "#DDDD00"
+        colorBg_hovered: "#FFFF00"
+        opacity: 0
+        colorBorder: "#00000000"
+        colorText: "#000000"
+        Component.onCompleted: visible=file.is("./.save")
+
+        onClicked: {
+            file.setSource("./.save")
+            var s=file.read(),x,y,r,n,i,ac,t,f,tp,th
+            n=Number(s.slice(0,s.indexOf(",")))
+            s=s.slice(s.indexOf(",")+1,s.length)
+            ac=Number(s.slice(0,s.indexOf(",")))
+            s=s.slice(s.indexOf(",")+1,s.length)
+            t=Number(s.slice(0,s.indexOf(",")))
+            s=s.slice(s.indexOf(",")+1,s.length)
+            f=Number(s.slice(0,s.indexOf(",")))
+            s=s.slice(s.indexOf(",")+1,s.length)
+            th=Number(s.slice(0,s.indexOf(",")))
+            s=s.slice(s.indexOf(",")+1,s.length)
+            tp=Number(s.slice(0,s.indexOf(",")))
+            s=s.slice(s.indexOf(",")+1,s.length)
+            x=Number(s.slice(0,s.indexOf(",")))
+            s=s.slice(s.indexOf(",")+1,s.length)
+            y=Number(s.slice(0,s.indexOf(",")))
+            s=s.slice(s.indexOf(",")+1,s.length)
+            r=Number(s.slice(0,s.indexOf(",")))
+            s=s.slice(s.indexOf(",")+1,s.length)
+            $item.initialize(ac,t,f,th,tp,x,y,r)
+            for(i=0;i<n;i++)
+            {
+                x=Number(s.slice(0,s.indexOf(",")))
+                s=s.slice(s.indexOf(",")+1,s.length)
+                y=Number(s.slice(0,s.indexOf(",")))
+                s=s.slice(s.indexOf(",")+1,s.length)
+                r=Number(s.slice(0,s.indexOf(",")))
+                s=s.slice(s.indexOf(",")+1,s.length)
+                $item.createBody(x,y,r)
+            }
+            next_type=1
             next=true
         }
     }
@@ -175,11 +248,11 @@ Item{//开始界面
         colorText: "#000000"
         onClicked:{
             $enMode=!$enMode
-            file.setSource(filel+"/.en")
+            file.setSource(filel+"./.en")
             file.write($enMode)
         }
         Component.onCompleted: {
-            file.setSource(filel+"/.en")
+            file.setSource(filel+"./.en")
             $enMode=file.read()=="true"?true:false
         }
     }
@@ -265,9 +338,9 @@ Item{//开始界面
         type:4
         width: 50
         height: 50
-        text: $enMode?"setting":"设置"
+        text: $enMode?"Setting":"设置"
         padding: 0
-        font.pixelSize: 20
+        font.pixelSize: $enMode?12:20
         y:parent.height-height
         x:parent.width
         colorBg_common: "#5f6061"
@@ -278,8 +351,7 @@ Item{//开始界面
         colorText: "#000000"
         onClicked:
         {
-            next_type=2
-            root.opacity=1
+            setting.visible=true
         }
     }
 }

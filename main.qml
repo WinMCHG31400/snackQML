@@ -20,11 +20,11 @@ ApplicationWindow {
     property int $fast
     property int $through
     property int $control
-    visible: true
+    visible: true/*
     minimumHeight: 600
     maximumHeight: 600
     minimumWidth: 900
-    maximumWidth: 900
+    maximumWidth: 900*/
     width: 900
     height: 600
     title: "SnackQML"
@@ -57,8 +57,57 @@ ApplicationWindow {
         source: "./raw/eat.wav"
     }
     Image{
-        anchors.fill: parent
+        id:_Bg
+        width: win.width
+        height: win.height
+        x:0
+        y:0
         source: "./images/back_load.png"
+        function reset(type_,source_=source)
+        {
+            source = ""
+            Qt.callLater(() => source = source_)
+            var sw=sourceSize.width,sh=sourceSize.height
+            switch(type_)
+            {
+            case 1:
+                if(sh/sw>win.height/win.width)
+                {
+                    width=win.width
+                    height=width*(sh/sw)
+                    x=0
+                    y=(win.height-height)/2
+                }
+                else if(sh/sw<win.height/win.width)
+                {
+                    height=win.height
+                    width=height*(sw/sh)
+                    x=(win.width-width)/2
+                    y=0
+                }
+                break
+            case 2:
+                if(sh/sw<win.height/win.width)
+                {
+                    width=win.width
+                    height=width*(sh/sw)
+                    x=0
+                    y=(win.height-height)/2
+                }
+                else if(sh/sw>win.height/win.width)
+                {
+                    height=win.height
+                    width=height*(sw/sh)
+                    x=(win.width-width)/2
+                    y=0
+                }
+                break
+            default:
+                _Bg.width=win.width
+                _Bg.height=win.height
+                x=y=0
+            }
+        }
     }
     Start{
         id:start_item
@@ -67,10 +116,17 @@ ApplicationWindow {
     Start_set{
         id:start_set
     }
+    SaveLoader{
+        id:saveLoader
+    }
+
     Playing{
         id:item
     }
     Help{
         id:help
+    }
+    Setting{
+        id:setting
     }
 }

@@ -17,18 +17,39 @@ Image{//游戏界面
     property int maxcent:0
     property int type:0
     property int maxtype:3
-    property bool smove:false
+    property bool is_autoMove:false
 
     property int difficulty:200
     property bool canDie:true
     property int next_type:0
     property bool next:false
+    property real back_opacity:0.1
     enabled: false
 
     visible: false
     opacity: 0
     width: 800
     height: 600
+    function initialize(ac,t,f,th,tp,x,y,r){
+        addcent=ac
+        timer3.tt=t
+        $fast=f
+        $through=th
+        setType(tp)
+        hear.x=x
+        hear.y=y
+        hear.rotation=r
+    }
+    function save(path="./.save")
+    {
+        file.setSource(path)
+        var a=snack.body.length+","+addcent+","+timer3.tt+","+$fast+","+$through+","+type+","
+        a+=hear.x+","+hear.y+","+hear.rotation+","
+        for(var i=0;i<snack.body.length;i++)
+            a+=snack.body[i].x+","+snack.body[i].y+","+snack.body[i].rotation+","
+        file.write(a)
+    }
+
     function generate_food()
     {
         var lxj=Math.random()
@@ -125,31 +146,31 @@ Image{//游戏界面
     }
     function setType(i){
         if(type==3 || type==2)
-            smove=1
+            is_autoMove=1
         else
-            smove=0
+            is_autoMove=0
         set_difficulty(200)
         type=i
-            switch(type){
-            case 0:
-            case 1:smove=false
-                break
-            default:smove=true
-            }
+        switch(type){
+        case 0:
+        case 1:is_autoMove=false
+            break
+        default:is_autoMove=true
+        }
         im.destroy()
         generate_food()
     }
     function set_difficulty(i){
         difficulty=i
     }
-    function diel(){
+    function die_(){
         timer.running=false
         timer3.running=false
         die.show(snack.cent+addcent,timer.tt/100)
     }
     function press_W()
     {
-        if(smove==1)
+        if(is_autoMove==1)
         {
             if(snack.num==-1? true:hear.rotation!=90)
                 hear.rotation=270
@@ -159,7 +180,7 @@ Image{//游戏界面
     }
     function press_A()
     {
-        if(smove==1)
+        if(is_autoMove==1)
         {
             if(snack.num==-1? true:hear.rotation!=0)
                 hear.rotation=180
@@ -169,7 +190,7 @@ Image{//游戏界面
     }
     function press_S()
     {
-        if(smove==1)
+        if(is_autoMove==1)
         {
             if(snack.num==-1? true:hear.rotation!=270)
                 hear.rotation=90
@@ -179,7 +200,7 @@ Image{//游戏界面
     }
     function press_D()
     {
-        if(smove==1)
+        if(is_autoMove==1)
         {
 
             if(snack.num==-1? true:hear.rotation!=180)
@@ -190,6 +211,28 @@ Image{//游戏界面
         else
             snack.d=1;
     }
+    function createBody(x=-1,y=-1,r=-1)
+    {
+        snack.cent++
+        snack.num++
+        var image=snack.body[snack.num]= Qt.createQmlObject("import QtQuick; Image { z:2; source: './images/snack_body1.png'; width: 20; height: 20}", item);
+        var aa
+        if(snack.num>=1)
+            aa=snack.body[snack.num-1]
+        else
+            aa=hear
+        var re=aa.rotation*Math.PI/180.0
+        image.rotation=r===-1?aa.rotation:r
+        image.x=x===-1?aa.x+(-Math.cos(re)*20):x
+        image.y=y===-1?aa.y+(-Math.sin(re)*20):y
+        image.z=2147483600-snack.num
+    }
+    Rectangle{
+        id:back
+        color:"#00000000"
+        anchors.fill: parent
+        opacity: back_opacity
+    }
 
     Component.onCompleted: {
         var i,j
@@ -197,7 +240,7 @@ Image{//游戏界面
         {
             for(j=0;j<600;j+=20)
             {
-                var image = Qt.createQmlObject("import QtQuick; Image { z:-1; source: './images/back.png'; width: 20; height: 20}", item);
+                var image = Qt.createQmlObject("import QtQuick; Image { z:-1; source: './images/back.png'; width: 20; height: 20}", back);
                 image.x=i
                 image.y=j
             }
@@ -205,7 +248,7 @@ Image{//游戏界面
         if(Qt.platform.os!="windows")
             control_bu.visible=true
         generate_food()
-        file.setSource(filel+"/data.d")
+        file.setSource("./data.d")
         maxcent=file.read()
     }
     onEnabledChanged:{
@@ -387,7 +430,7 @@ Image{//游戏界面
             onTriggered:{
                 if(!pausen)
                 {
-                    if(smove)
+                    if(is_autoMove)
                     {
                         switch(hear.rotation)
                         {
@@ -400,7 +443,7 @@ Image{//游戏界面
                                     hear.y-=20
                             }
                             else if(canDie)
-                                diel()
+                                die_l()
                             hear.rotation=270
                             canEat=true
                             break
@@ -413,7 +456,7 @@ Image{//游戏界面
                                     hear.x-=20
                             }
                             else if(canDie)
-                                diel()
+                                die_()
                             hear.rotation=180
                             canEat=true
                             break
@@ -426,7 +469,7 @@ Image{//游戏界面
                                     hear.y+=20
                             }
                             else if(canDie)
-                                diel()
+                                die_()
                             hear.rotation=90
                             canEat=true
                             break
@@ -439,7 +482,7 @@ Image{//游戏界面
                                     hear.x+=20
                             }
                             else if(canDie)
-                                diel()
+                                die_()
                             hear.rotation=0
                             canEat=true
                             break
@@ -447,7 +490,7 @@ Image{//游戏界面
                     }
                     if($through>0) $through--
                     if($fast>0) $fast--
-                    if(!smove){
+                    if(!is_autoMove){
                         if(snack.w==1)
                         {
                             if(hear.y>0 && (canThrough? true:(!isBody(hear.x,hear.y-20)))){
@@ -529,22 +572,10 @@ Image{//游戏界面
                             break
                         default:break
                         }
-                        snack.cent++
-                        snack.num++
-                        var image=snack.body[snack.num]= Qt.createQmlObject("import QtQuick; Image { z:2; source: './images/snack_body1.png'; width: 20; height: 20}", item);
-                        var aa
-                        if(snack.num>=1)
-                            aa=snack.body[snack.num-1]
-                        else
-                            aa=hear
-                        var re=aa.rotation*Math.PI/180.0
-                        image.rotation=aa.rotation
-                        image.x=aa.x+(-Math.cos(re)*20)
-                        image.y=aa.y+(-Math.sin(re)*20)
-                        image.z=2147483600-snack.num
+                        createBody()
                         if((snack.cent+addcent)>maxcent)
                         {
-                            file.setSource(filel+"/data.d")
+                            file.setSource("./data.d")
                             file.write(snack.cent+addcent)
                         }
                         im.destroy()
@@ -655,10 +686,10 @@ Image{//游戏界面
             height: 30
             color: {
                 switch(type){
-                    case 0:return "#FFD700"
-                    case 1:return "#00FFFF"
-                    case 2:return "#FFFAFA"
-                    case 3:return "#FF0000"
+                case 0:return "#FFD700"
+                case 1:return "#00FFFF"
+                case 2:return "#FFFAFA"
+                case 3:return "#FF0000"
                 }
 
             }
@@ -690,7 +721,7 @@ Image{//游戏界面
                 anchors.centerIn: parent
                 font.pixelSize: $enMode?10:14
                 font.bold: true
-                text: $enMode?"Can't through self":"不允许爬上自身"
+                text: $through>0?($enMode?"Can't through self":"不允许爬上自身"):($enMode?"Can through self":"允许爬上自身")
             }
             MouseArea{
                 anchors.fill: parent;
@@ -889,7 +920,7 @@ Image{//游戏界面
         onOpacityChanged: if(opacity==0)pause_i.visible=false
 
 
-        Item{//退出确认界面
+        Item{
             z:2147483647
             Image{
                 source: "./images/pause.png"
@@ -917,7 +948,8 @@ Image{//游戏界面
                         MouseArea{
                             anchors.fill: parent;
                             onClicked: {
-                                    Qt.quit()
+                                save()
+                                Qt.quit()
                             }
                         }
                     }
@@ -952,7 +984,12 @@ Image{//游戏界面
     }
 
     Keys.onPressed:(event)=>{
-                       if(event.key===Qt.Key_W)press_W()
+                       if((event.modifiers & Qt.ControlModifier) && event.key === Qt.Key_S)
+                       {
+                           event.accepted = true
+                           save()
+                       }
+                       else if(event.key===Qt.Key_W)press_W()
                        else if(event.key===Qt.Key_A)press_A()
                        else if(event.key===Qt.Key_S)press_S()
                        else if(event.key===Qt.Key_D)press_D()
