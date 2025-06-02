@@ -20,11 +20,11 @@ ApplicationWindow {
     property int $fast
     property int $through
     property int $control
-    visible: true/*
+    visible: true
     minimumHeight: 600
     maximumHeight: 600
     minimumWidth: 900
-    maximumWidth: 900*/
+    maximumWidth: 900
     width: 900
     height: 600
     title: "SnackQML"
