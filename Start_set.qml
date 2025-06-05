@@ -259,7 +259,7 @@ Rectangle {
                 Choice{
                     onChoiceChanged:
                     {
-                        $item.candie=choice
+                        $item.canDie=choice
                     }
                     x:$enMode?120:100
                     y:10
@@ -323,7 +323,7 @@ Rectangle {
                 Choice{
                     onChoiceChanged:
                     {
-                        $item.candie=choice
+                        $item.canDie=choice
                     }
                     x:$enMode?120:100
                     y:10

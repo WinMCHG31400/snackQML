@@ -1,7 +1,6 @@
 import QtQuick
 
 Image{//游戏界面
-
     id:item
     property int x0 //存储生成的食物的位置
     property int y0 //存储生成的食物的位置
@@ -12,25 +11,23 @@ Image{//游戏界面
     property bool canThrough:$through>0?true:false  //是否可以爬上自身
     property bool isFast:$fast>0?true:false
     property int im_type        //生成的食物的种类
-    property bool control:false //是否开启开发者模式
     property int addcent:0      //额外增加的分数
-    property int maxcent:0
-    property int type:0
-    property int maxtype:3
-    property bool is_autoMove:false
-
-    property int difficulty:200
-    property bool canDie:true
-    property int next_type:0
-    property bool next:false
-    property real back_opacity:0.1
+    property int maxcent:0//最高分
+    property int type:0//游戏模式
+    property int maxtype:3//游戏模式最大值
+    property bool is_autoMove:false//是否自动移动
+    property int difficulty:200//难度
+    property bool canDie:true//是否允许死亡
+    property int next_type:0//下一个界面序号
+    property bool next:false//下一个界面
+    property real back_opacity:0.1//背景透明度
+    property Component c_body:Qt.createComponent("./SnakeBody.qml")
     enabled: false
-
     visible: false
     opacity: 0
     width: 800
     height: 600
-    function initialize(ac,t,f,th,tp,x,y,r){
+    function initialize(ac,t,f,th,tp,x,y,r){//保存的游戏初始化
         addcent=ac
         timer3.tt=t
         $fast=f
@@ -40,8 +37,12 @@ Image{//游戏界面
         hear.y=y
         hear.rotation=r
     }
-    function save(path="./.save")
-    {
+    function reColor(){
+        for(var i=0;i<snack.body.length;i++)
+            snack.body[i].resetColor()
+    }
+
+    function save(path="./.save"){//保存游戏
         file.setSource(path)
         var a=snack.body.length+","+addcent+","+timer3.tt+","+$fast+","+$through+","+type+","
         a+=hear.x+","+hear.y+","+hear.rotation+","
@@ -49,9 +50,7 @@ Image{//游戏界面
             a+=snack.body[i].x+","+snack.body[i].y+","+snack.body[i].rotation+","
         file.write(a)
     }
-
-    function generate_food()
-    {
+    function generate_food(){//生成食物
         var lxj=Math.random()
         var image
         if(type==0 ||type==3)
@@ -143,12 +142,19 @@ Image{//游戏界面
         }
         x0=image.x=parseInt(Math.random()*40)*20
         y0=image.y=parseInt(Math.random()*30)*20
+        if(snack.body.length<600)
+        {
+            if(timer.isBody(x0,y0)){
+                im.destroy()
+                generate_food()
+            }
+        }
+        else if(x0==hear.x&&y0==hear.y){
+            im.destroy()
+            generate_food()
+        }
     }
-    function setType(i){
-        if(type==3 || type==2)
-            is_autoMove=1
-        else
-            is_autoMove=0
+    function setType(i){//修改模式
         set_difficulty(200)
         type=i
         switch(type){
@@ -156,30 +162,29 @@ Image{//游戏界面
         case 1:is_autoMove=false
             break
         default:is_autoMove=true
+            canDie=true
         }
         im.destroy()
         generate_food()
     }
-    function set_difficulty(i){
+    function set_difficulty(i){//修改难度
         difficulty=i
     }
-    function die_(){
+    function die_(){//死亡
         timer.running=false
         timer3.running=false
         die.show(snack.cent+addcent,timer.tt/100)
     }
-    function press_W()
-    {
+    function press_W(){
         if(is_autoMove==1)
         {
-            if(snack.num==-1? true:hear.rotation!=90)
+            if(snack.body.length==-1? true:hear.rotation!=90)
                 hear.rotation=270
         }
         else
             snack.w=1;
     }
-    function press_A()
-    {
+    function press_A(){
         if(is_autoMove==1)
         {
             if(snack.num==-1? true:hear.rotation!=0)
@@ -188,8 +193,7 @@ Image{//游戏界面
         else
             snack.a=1
     }
-    function press_S()
-    {
+    function press_S(){
         if(is_autoMove==1)
         {
             if(snack.num==-1? true:hear.rotation!=270)
@@ -198,8 +202,7 @@ Image{//游戏界面
         else
             snack.s=1;
     }
-    function press_D()
-    {
+    function press_D(){
         if(is_autoMove==1)
         {
 
@@ -211,30 +214,27 @@ Image{//游戏界面
         else
             snack.d=1;
     }
-    function createBody(x=-1,y=-1,r=-1)
-    {
+    function createBody(x=-1,y=-1,r=-1){//生成身体
         snack.cent++
-        snack.num++
-        var image=snack.body[snack.num]= Qt.createQmlObject("import QtQuick; Image { z:2; source: './images/snack_body1.png'; width: 20; height: 20}", item);
-        var aa
-        if(snack.num>=1)
-            aa=snack.body[snack.num-1]
-        else
-            aa=hear
-        var re=aa.rotation*Math.PI/180.0
-        image.rotation=r===-1?aa.rotation:r
-        image.x=x===-1?aa.x+(-Math.cos(re)*20):x
-        image.y=y===-1?aa.y+(-Math.sin(re)*20):y
-        image.z=2147483600-snack.num
+        var this_body=c_body.createObject(item)
+        snack.body.push(this_body)
+        var last_body=snack.body.length>=1?snack.body[snack.body.length-1]:hear
+        var re=last_body.rotation*Math.PI/180.0
+        this_body.initialize(snack,hear,2147483600-snack.body.length,r===-1?last_body.rotation:r,x===-1?last_body.x+(-Math.cos(re)*20):x,y===-1?last_body.y+(-Math.sin(re)*20):y,snack.body.length-1)
+        for(var i=0;i<snack.body.length;i++)
+        {
+            snack.body[i].resetColor()
+            snack.body[i].resetRotation()
+        }
+
     }
-    Rectangle{
+    Rectangle{//背景
         id:back
         color:"#00000000"
         anchors.fill: parent
         opacity: back_opacity
     }
-
-    Component.onCompleted: {
+    Component.onCompleted: {//生成背景
         var i,j
         for(i=0;i<800;i+=20)//
         {
@@ -283,9 +283,14 @@ Image{//游戏界面
         easing.type: Easing.InOutQuad
         easing.overshoot: 1.0
         to: 1.0
+        onStarted: {
+            start_set.z=-1
+            start_set.visible=false
+        }
         onStopped: {
             timer.running=true
             timer3.running=true
+            $doud=true
         }
     }
     Timer{//计时专用计时器
@@ -375,6 +380,7 @@ Image{//游戏界面
         }
     }
     Image {//蛇头
+        property int type:0
         z:2147483646
         x:200
         y:200
@@ -382,7 +388,7 @@ Image{//游戏界面
         height: 20
         visible: true
         id: hear
-        source: "./images/snack_hear.png"
+        source: type==0?"./images/snack_hear.png":"./images/snack_hear"+hear.type+".png"
     }
     Item {//蛇身体
         z:2
@@ -397,12 +403,12 @@ Image{//游戏界面
         property int a: 0
         property int s: 0
         property int d: 0
-        property var body:[1200]
+        property var body:[]
         property int num:-1
         Timer{
             function body_move(x,y,r){
                 var x0,y0,r0
-                for(var i=0;i<=snack.num;i++)
+                for(var i=0;i<snack.body.length;i++)
                 {
                     x0=snack.body[i].x
                     y0=snack.body[i].y
@@ -413,20 +419,33 @@ Image{//游戏界面
                     x=x0
                     y=y0
                     r=r0
+                    if(snack.body[i].rotation<0)snack.body[i].rotation+=360
+                    else if(snack.body[i].rotation>360)snack.body[i].rotation-=360
                 }
+                for(i=0;i<snack.body.length;i++)
+                    snack.body[i].resetRotation()
             }
             function isBody(x,y){
-                for(var i=0;i<=snack.num;i++)
+                for(var i=0;i<snack.body.length;i++)
                 {
                     if(snack.body[i].y==y && snack.body[i].x==x)
                         return true
                 }
                 return false
             }
+            function getBody(x,y){
+                for(var i=0;i<snack.body.length;i++)
+                {
+                    if(snack.body[i].y==y && snack.body[i].x==x)
+                        return i
+                }
+                return -1
+            }
             id: timer;
             repeat: true;
             running:false
             interval:isFast?difficulty/2:difficulty
+            onIntervalChanged: $delTime=interval
             onTriggered:{
                 if(!pausen)
                 {
@@ -491,46 +510,91 @@ Image{//游戏界面
                     if($through>0) $through--
                     if($fast>0) $fast--
                     if(!is_autoMove){
-                        if(snack.w==1)
+                        var r,f=false,l=hear.rotation
+                        if(snack.w==1)r=270
+                        else if(snack.a==1)r=180
+                        else if(snack.s==1)r=90
+                        else if(snack.d==1)r=0
+                        switch(r)
                         {
-                            if(hear.y>0 && (canThrough? true:(!isBody(hear.x,hear.y-20)))){
-                                hear.y-=20
-                                body_move(hear.x,hear.y+20,270)
-                            }
-                            hear.rotation=270
-                            canEat=true
-                        }
-                        else if(snack.a==1)
-                        {
-                            if(hear.x>0 && (canThrough? true:(!isBody(hear.x-20,hear.y)))){
-                                hear.x-=20
-                                body_move(hear.x+20,hear.y,180)
-                            }
-                            hear.rotation=180
-                            canEat=true
-                        }
-                        else if(snack.s==1)
-                        {
-                            if(hear.y<580 && (canThrough? true:(!isBody(hear.x,hear.y+20)))){
-                                hear.y+=20
-                                body_move(hear.x,hear.y-20,90)
-                            }
-                            hear.rotation=90
-                            canEat=true
-                        }
-                        else if(snack.d==1)
-                        {
+                        case 0:
+                            hear.type=0
                             if(hear.x<780 && (canThrough? true:(!isBody(hear.x+20,hear.y)))){
                                 hear.x+=20
                                 body_move(hear.x-20,hear.y,0)
                             }
+                            else if(snack.body.length>0)
+                            {
+                                if(snack.body[0].rotation==180)
+                                    hear.type=3
+                                else
+                                f=true
+                            }
+
                             hear.rotation=0
                             canEat=true
+                            break
+                        case 90:
+                            hear.type=0
+                            if(hear.y<580 && (canThrough? true:(!isBody(hear.x,hear.y+20)))){
+                                hear.y+=20
+                                body_move(hear.x,hear.y-20,90)
+                            }
+                            else if(snack.body.length>0)
+                            {
+                                if(snack.body[0].rotation==270)
+                                    hear.type=3
+                                else
+                                f=true
+                            }
+                            hear.rotation=90
+                            canEat=true
+                            break
+                        case 180:
+                            hear.type=0
+                            if(hear.x>0 && (canThrough? true:(!isBody(hear.x-20,hear.y)))){
+                                hear.x-=20
+                                body_move(hear.x+20,hear.y,180)
+                            }
+                            else if(snack.body.length>0)
+                            {
+                                if(snack.body[0].rotation==0)
+                                    hear.type=3
+                                else
+                                f=true
+                            }
+                            hear.rotation=180
+                            canEat=true
+                            break
+                        case 270:
+                            hear.type=0
+                            if(hear.y>0 && (canThrough? true:(!isBody(hear.x,hear.y-20)))){
+                                hear.y-=20
+                                body_move(hear.x,hear.y+20,270)
+                            }
+                            else if(snack.body.length>0)
+                            {
+                                if(snack.body[0].rotation==90)
+                                    hear.type=3
+                                else
+                                f=true
+                            }
+                            hear.rotation=270
+                            canEat=true
+                        }
+                        if(f)
+                        {
+                            var this_=hear.rotation-snack.body[0].rotation
+                            if(this_<0)this_+=360
+                            if(this_==90)
+                                hear.type=1
+                            else if(this_==270)
+                                hear.type=2
                         }
                     }
                     if(hear.x==x0 && hear.y==y0 && canEat)//吃到食物
                     {
-                        move_ea.play()
+                        move_ea.play_()
                         switch(im_type)
                         {
                         case 1:
@@ -586,8 +650,7 @@ Image{//游戏界面
             }
         }
     }
-
-    Image{//面板
+    Image{//参数面板
         id:item_mm
         source:"./images/back_null.png"
         x:800
@@ -624,7 +687,7 @@ Image{//游戏界面
                 anchors.centerIn: parent
                 font.pixelSize: 25
                 font.bold: true
-                text: (snack.num+3)+"m"
+                text: (snack.body.length+3)+"m"
             }
         }
         Rectangle {//显示时间
@@ -708,38 +771,6 @@ Image{//游戏界面
                 }
             }
         }
-        Rectangle {//显示穿过状态（按钮）
-            id:bu_through
-            z:10
-            x:0
-            y:235
-            width: 100
-            height: 30
-            color: "#CDCDC1"
-            Text {
-                id:bu_through_bu
-                anchors.centerIn: parent
-                font.pixelSize: $enMode?10:14
-                font.bold: true
-                text: $through>0?($enMode?"Can't through self":"不允许爬上自身"):($enMode?"Can through self":"允许爬上自身")
-            }
-            MouseArea{
-                anchors.fill: parent;
-                onClicked: {
-                    if(control)//开发者模式下允许使用按钮修改
-                    {
-                        if(!canThrough)
-                        {
-                            bu_through_bu.allow()
-                            timer.throuth=2147483647
-                        }
-                        else
-                            bu_through_bu.refuse()
-                        press_su.play_()
-                    }
-                }
-            }
-        }
         Rectangle{//显示移动按钮的按钮
             id:control__bu
             x:0
@@ -765,10 +796,10 @@ Image{//游戏界面
                     }
                     else
                     {
-                        bu_control__bu.text=$enMode?"显示 control button":"显示控制按钮"
+                        bu_control__bu.text=$enMode?"show control button":"显示控制按钮"
                         control_bu.visible=true
                     }
-                    press_su.play_()
+
                 }
             }
         }
@@ -780,17 +811,37 @@ Image{//游戏界面
             z:10
             width: 100
             height: 30
-            colorBg: "#FFFFFF"
+            colorBg: "#9aa7d6"
             checkable: true
             checked: true
             colorBorder: "#00000000"
-            onCheckedChanged: $doud=checked
+            onClicked: $doud=!checked
             Text {
                 id:bu_soude__bu
                 anchors.centerIn: parent
                 font.pixelSize: 14
                 font.bold: true
                 text: $doud?($enMode?"Adiuo":"开启音效"):($enMode?"No Adiuo":"关闭音效")
+            }
+        }
+        Rectangle {//设置按钮
+            z:10
+            x:0
+            y:380
+            width: 100
+            height: 30
+            color: "#5f6061"
+            Text {
+                anchors.centerIn: parent
+                font.pixelSize: 14
+                font.bold: true
+                text: $enMode?"Setting":"设置"
+            }
+            MouseArea{
+                anchors.fill: parent;
+                onClicked: {
+                    setting.visible=true
+                }
             }
         }
         Rectangle {//帮助按钮
@@ -838,15 +889,12 @@ Image{//游戏界面
                 anchors.fill: parent;
                 onClicked: {
                     pause_i.enabled=!pause_i.enabled
-                    press_su.play_()
+
                 }
             }
         }
     }
-
-
-
-    Image{
+    Image{//死亡界面
         visible: false
         width: 900
         height:600
@@ -891,7 +939,6 @@ Image{//游戏界面
             }
         }
     }
-
     Image {//暂停
         enabled: false
         property bool next:false
@@ -982,7 +1029,6 @@ Image{//游戏界面
             }
         }
     }
-
     Keys.onPressed:(event)=>{
                        if((event.modifiers & Qt.ControlModifier) && event.key === Qt.Key_S)
                        {
@@ -1000,17 +1046,16 @@ Image{//游戏界面
                        if(event.key===Qt.Key_V)
                        {
                            $doud=!$doud
-                           press_su.play()
                        }
                        else if(event.key===Qt.Key_Space)
                        {
                            pause_i.enabled=!pause_i.enabled
-                           press_su.play_()
+
                        }
                        else if(event.key===Qt.Key_Escape)
                        {
                            pause_i.enabled=!pause_i.enabled
-                           press_su.play_()
+
                        }
                    }
     Keys.onReleased: (event)=>{
@@ -1037,10 +1082,10 @@ Image{//游戏界面
                          else if(event.key===Qt.Key_F12)//f12打开开发者模式
                          {
                              win.title=$enMode?"SnackQml//Developer's Mode":"SnackQML//开发者模式"
-                             control=true
-                             press_su.play_()
+                             $control=true
+
                          }
-                         else if(event.key===Qt.Key_F1 &&control)
+                         else if(event.key===Qt.Key_F1 &&$control)
                          {
                              if($fast>0)
                              {
@@ -1050,9 +1095,9 @@ Image{//游戏界面
                              {
                                  $fast=2147483647
                              }
-                             press_su.play_()
+
                          }
-                         else if(event.key===Qt.Key_F2 &&control)
+                         else if(event.key===Qt.Key_F2 &&$control)
                          {
                              if($through>0)
                              {
@@ -1062,22 +1107,21 @@ Image{//游戏界面
                              {
                                  $through=2147483647
                              }
-                             press_su.play_()
+
                          }
-                         else if(event.key===Qt.Key_F3 &&control)
+                         else if(event.key===Qt.Key_F3 &&$control)
                          {
                              if(type==maxtype)
                              type=0
                              else
                              type++
                              setType(type)
-                             press_su.play_()
+
                          }
-                         else if(event.key===Qt.Key_F4 &&control)
+                         else if(event.key===Qt.Key_F4 &&$control)
                          {
                              im.destroy()
                              generate_food()
                          }
                      }
 }
-

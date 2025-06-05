@@ -6,6 +6,12 @@ import GFile
 import QtMultimedia
 
 ApplicationWindow {
+    SnakeBody{
+        z:-2
+        x:-20
+        y:-20
+    }
+
     id:win
     //opacity: 0.1
     property string filel       //用于处理文件操作
@@ -20,6 +26,8 @@ ApplicationWindow {
     property int $fast
     property int $through
     property int $control
+    property int $delTime
+    property real snackOpacity
     visible: true
     minimumHeight: 600
     maximumHeight: 600
@@ -44,17 +52,13 @@ ApplicationWindow {
     GFile{
         id:file
     }
-    SoundEffect{//按键音效
-        id:press_su
-        source: "./raw/click.wav"
-        function play_()
-        {
-            if($doud) press_su.play()
-        }
-    }
     SoundEffect{//吃到食物音效
         id:move_ea
         source: "./raw/eat.wav"
+        function play_()
+        {
+            if($doud) play()
+        }
     }
     Image{
         id:_Bg

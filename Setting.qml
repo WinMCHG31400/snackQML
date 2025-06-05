@@ -30,13 +30,27 @@ Window {
         height: 20
         text:$enMode?"back Opacity":"背景透明度"
         text_width: $enMode?100:80
-        Component.onCompleted: setValue(100)
+        Component.onCompleted: setValue(50)
         minValue: 0
         maxValue: 100
         onValueChanged: $item.back_opacity=value/100
     }
+    CscrollBar{
+        width:300
+        y:43
+        height: 20
+        text:$enMode?"snack Opacity":"蛇透明度"
+        text_width: $enMode?100:80
+        Component.onCompleted: setValue(0)
+        minValue: 0
+        maxValue: 100
+        onValueChanged: {
+            snackOpacity=value/100
+            item.reColor()
+        }
+    }
     Item{
-        y:53
+        y:74
         Text{
             text:$enMode?"Back Image":"背景图片"
             font.pixelSize: 15

@@ -17,8 +17,6 @@ SOURCES += \
         gfile.cpp \
         main.cpp
 
-RESOURCES += qml.qrc
-
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH = C:\Users\mine\Documents\[]my\Qt\snack
 
@@ -33,3 +31,23 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     Base.h \
     gfile.h
+
+DISTFILES += \
+    CCheckBox.qml \
+    CSaveItem.qml \
+    Cbutton.qml \
+    Choice.qml \
+    ColorPickerItem.qml \
+    CscrollBar.qml \
+    Help.qml \
+    ImaButton.qml \
+    Playing.qml \
+    ProgreBar.qml \
+    Qtinfo.qml \
+    SaveLoader.qml \
+    Setting.qml \
+    SnakeBody.qml \
+    Start.qml \
+    Start_set.qml \
+    main.qml \
+    snack.qml
