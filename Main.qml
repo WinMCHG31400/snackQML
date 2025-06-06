@@ -7,9 +7,8 @@ import QtMultimedia
 
 ApplicationWindow {
     SnakeBody{
-        z:-2
-        x:-20
-        y:-20
+        x:-100
+        y:-100
     }
 
     id:win
@@ -27,7 +26,7 @@ ApplicationWindow {
     property int $through
     property int $control
     property int $delTime
-    property real snackOpacity
+    property bool $sbInfo:false
     visible: true
     minimumHeight: 600
     maximumHeight: 600
@@ -119,9 +118,6 @@ ApplicationWindow {
     }
     Start_set{
         id:start_set
-    }
-    SaveLoader{
-        id:saveLoader
     }
 
     Playing{

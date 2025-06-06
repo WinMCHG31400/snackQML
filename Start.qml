@@ -116,10 +116,25 @@ Item{//开始界面
         colorBorder: "#00000000"
         colorText: "#000000"
         Component.onCompleted: visible=file.is("./.save")
-
         onClicked: {
             file.setSource("./.save")
-            var s=file.read(),x,y,r,n,i,ac,t,f,tp,th
+            var s=file.read(),x,y,r,n,i,ac,t,f,th,c,s_
+            t=Number(s.slice(0,s.indexOf(",")))
+            $item.setType(t)
+            s=s.slice(s.indexOf(",")+1,s.length)
+            s_=s
+            c=s.slice(0,s.indexOf(","))=="true"?true:false
+            $item.canDie=c
+            s=s.slice(s.indexOf(",")+1,s.length)
+            c=s.slice(0,s.indexOf(","))=="true"?true:false
+            $item.canCrossBorder=c
+            s=s.slice(s.indexOf(",")+1,s.length)
+            c=s.slice(0,s.indexOf(","))=="true"?true:false
+            $item.is_autoMove=c
+            s=s.slice(s.indexOf(",")+1,s.length)
+            n=Number(s.slice(0,s.indexOf(",")))
+            $item.set_difficulty(n)
+            s=s.slice(s.indexOf(",")+1,s.length)
             n=Number(s.slice(0,s.indexOf(",")))
             s=s.slice(s.indexOf(",")+1,s.length)
             ac=Number(s.slice(0,s.indexOf(",")))
@@ -130,15 +145,13 @@ Item{//开始界面
             s=s.slice(s.indexOf(",")+1,s.length)
             th=Number(s.slice(0,s.indexOf(",")))
             s=s.slice(s.indexOf(",")+1,s.length)
-            tp=Number(s.slice(0,s.indexOf(",")))
-            s=s.slice(s.indexOf(",")+1,s.length)
             x=Number(s.slice(0,s.indexOf(",")))
             s=s.slice(s.indexOf(",")+1,s.length)
             y=Number(s.slice(0,s.indexOf(",")))
             s=s.slice(s.indexOf(",")+1,s.length)
             r=Number(s.slice(0,s.indexOf(",")))
             s=s.slice(s.indexOf(",")+1,s.length)
-            $item.initialize(ac,t,f,th,tp,x,y,r)
+            $item.initialize(ac,t,f,th,x,y,r,s_)
             for(i=0;i<n;i++)
             {
                 x=Number(s.slice(0,s.indexOf(",")))

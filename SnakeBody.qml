@@ -3,9 +3,11 @@ import QtQuick
 Rectangle {
     id:root
     property var snake
+    property var parent_
     property var hear
     property int n
-    function initialize(s_,h_,z_,r_,x_,y_,n_){
+    function initialize(p_,s_,h_,z_,r_,x_,y_,n_){
+        parent_=p_
         snake=s_
         hear=h_
         z=z_
@@ -77,20 +79,19 @@ Rectangle {
             im.rotation=0
         }
     }
-
     z:2;
     Image{
         id:im
         anchors.fill: parent
-        source: "./images/snack_body1.png"
+        source: "./images/snack_body3.png"
     }
     Item{
-        visible: $control
+        visible: $sbInfo
         width: 20
         height: 20
         rotation: 0-parent.rotation
         Text{
-            font.pixelSize: 20
+            font.pixelSize: 18
             text: n
             color:"#0000FF"
             anchors.centerIn: parent

@@ -117,10 +117,10 @@ Item{
             verticalAlignment: Text.AlignVCenter
         }
     }
-    ImaButton{
+    Cbutton{
         radiusBg: 0
         id:reseter
-        img:"./images/reset.png"
+        text:"R"
         x:root.width-15
         visible: reset!=-1
         width: root.height

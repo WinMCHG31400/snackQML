@@ -45,7 +45,7 @@ Window {
         minValue: 0
         maxValue: 100
         onValueChanged: {
-            snackOpacity=value/100
+            item.snackOpacity=value/100
             item.reColor()
         }
     }

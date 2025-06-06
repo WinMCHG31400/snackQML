@@ -5,46 +5,64 @@ Image{//游戏界面
     property int x0 //存储生成的食物的位置
     property int y0 //存储生成的食物的位置
     property var im //存储生成的食物（Image）
-    property bool canEat:true    //是否可以吃食物
-    property bool canGenerate:true     //是否允许食物生成
+    property bool canGenerate:true//是否允许食物生成
     property bool isShow_:false //控制
     property bool canThrough:$through>0?true:false  //是否可以爬上自身
     property bool isFast:$fast>0?true:false
-    property int im_type        //生成的食物的种类
-    property int addcent:0      //额外增加的分数
+    property int im_type//生成的食物的种类
+    property int addcent:0//额外增加的分数
     property int maxcent:0//最高分
     property int type:0//游戏模式
+    property bool control:false
     property int maxtype:3//游戏模式最大值
     property bool is_autoMove:false//是否自动移动
-    property int difficulty:200//难度
+    property int generateFoodType:0
+    property bool canCrossBorder:false
+    property int difficulty:150//难度
     property bool canDie:true//是否允许死亡
+    property real back_opacity:0.1//背景透明度
+    property real snackOpacity:0//蛇透明度
     property int next_type:0//下一个界面序号
     property bool next:false//下一个界面
-    property real back_opacity:0.1//背景透明度
     property Component c_body:Qt.createComponent("./SnakeBody.qml")
+    property string s
     enabled: false
     visible: false
     opacity: 0
     width: 800
     height: 600
-    function initialize(ac,t,f,th,tp,x,y,r){//保存的游戏初始化
-        addcent=ac
-        timer3.tt=t
-        $fast=f
-        $through=th
-        setType(tp)
-        hear.x=x
-        hear.y=y
-        hear.rotation=r
+    function initialize(ac=-1,t=0,f=0,th=0,x=0,y=0,r=0,s_){//保存的游戏初始化
+        if(ac==-1)
+        {
+            var c
+            c=s.slice(0,s.indexOf(","))=="true"?true:false
+            $item.canDie=c
+            s=s.slice(s.indexOf(",")+1,s.length)
+            c=s.slice(0,s.indexOf(","))=="true"?true:false
+            $item.canCrossBorder=c
+            s=s.slice(s.indexOf(",")+1,s.length)
+            c=s.slice(0,s.indexOf(","))=="true"?true:false
+            $item.is_autoMove=c
+        }
+        else
+        {
+            addcent=ac
+            timer3.t=t*100
+            $fast=f
+            $through=th
+            hear.x=x
+            hear.y=y
+            hear.rotation=r
+            s=s_
+        }
     }
     function reColor(){
         for(var i=0;i<snack.body.length;i++)
             snack.body[i].resetColor()
     }
-
     function save(path="./.save"){//保存游戏
         file.setSource(path)
-        var a=snack.body.length+","+addcent+","+timer3.tt+","+$fast+","+$through+","+type+","
+        var a=type+","+canDie+","+canCrossBorder+","+is_autoMove+","+difficulty+","+snack.body.length+","+addcent+","+timer3.tt+","+$fast+","+$through+","
         a+=hear.x+","+hear.y+","+hear.rotation+","
         for(var i=0;i<snack.body.length;i++)
             a+=snack.body[i].x+","+snack.body[i].y+","+snack.body[i].rotation+","
@@ -53,35 +71,35 @@ Image{//游戏界面
     function generate_food(){//生成食物
         var lxj=Math.random()
         var image
-        if(type==0 ||type==3)
+        if(generateFoodType==0)
         {
-            if(lxj>0.9)
+            if(lxj>0.95)
             {
                 im_type=1
                 image =im= Qt.createQmlObject("import QtQuick; Image { z:214748364; source: './images/food_speed.png'; width: 20; height: 20}", item);
             }
-            else if(lxj>0.85)
+            else if(lxj>0.875)
             {
                 im_type=10
                 image =im= Qt.createQmlObject("import QtQuick; Image { z:214748364; source: './images/food_speed_big.png'; width: 20; height: 20}", item);
             }
-            else if(lxj>0.75)
+            else if(lxj>0.825)
             {
                 im_type=2
                 image =im= Qt.createQmlObject("import QtQuick; Image { z:214748364; source: './images/food_throuth.png'; width: 20; height: 20}", item);
             }
-            else if(lxj>0.7)
+            else if(lxj>0.8)
             {
                 im_type=20
                 image =im= Qt.createQmlObject("import QtQuick; Image { z:214748364; source: './images/food_throuth_big.png'; width: 20; height: 20}", item);
             }
-            else if(lxj>0.65)
+            else if(lxj>0.85)
             {
                 im_type=3
                 image =im= Qt.createQmlObject("import QtQuick; Image { z:214748364; source: './images/food_high.png'; width: 20; height: 20}", item);
 
             }
-            else if(lxj>0.6)
+            else if(lxj>0.83)
             {
                 im_type=4
                 image =im= Qt.createQmlObject("import QtQuick; Image { z:214748364; source: './images/food_s&t.png'; width: 20; height: 20}", item);
@@ -94,7 +112,7 @@ Image{//游戏界面
             }
 
         }
-        else if(type==1)
+        else if(generateFoodType==1)
         {
             if(lxj>0.9)
             {
@@ -142,6 +160,7 @@ Image{//游戏界面
         }
         x0=image.x=parseInt(Math.random()*40)*20
         y0=image.y=parseInt(Math.random()*30)*20
+        image.z=2147483467
         if(snack.body.length<600)
         {
             if(timer.isBody(x0,y0)){
@@ -155,14 +174,24 @@ Image{//游戏界面
         }
     }
     function setType(i){//修改模式
-        set_difficulty(200)
         type=i
         switch(type){
         case 0:
-        case 1:is_autoMove=false
+            canCrossBorder=false
+            generateFoodType=0
+            is_autoMove=false
             break
-        default:is_autoMove=true
-            canDie=true
+        case 1:
+            canCrossBorder=true
+            generateFoodType=2
+            is_autoMove=true
+            break
+        case 2:
+            canCrossBorder=false
+            generateFoodType=1
+            is_autoMove=false
+            break
+        case 3:break
         }
         im.destroy()
         generate_food()
@@ -178,8 +207,11 @@ Image{//游戏界面
     function press_W(){
         if(is_autoMove==1)
         {
-            if(snack.body.length==-1? true:hear.rotation!=90)
-                hear.rotation=270
+            if(snack.body.length>0)
+            {
+                if(snack.body[0].rotation!=90)hear.rotation=270
+            }
+            else hear.rotation=270
         }
         else
             snack.w=1;
@@ -187,8 +219,11 @@ Image{//游戏界面
     function press_A(){
         if(is_autoMove==1)
         {
-            if(snack.num==-1? true:hear.rotation!=0)
-                hear.rotation=180
+            if(snack.body.length>0)
+            {
+                if(snack.body[0].rotation!=0)hear.rotation=180
+            }
+            else hear.rotation=180
         }
         else
             snack.a=1
@@ -196,8 +231,11 @@ Image{//游戏界面
     function press_S(){
         if(is_autoMove==1)
         {
-            if(snack.num==-1? true:hear.rotation!=270)
-                hear.rotation=90
+            if(snack.body.length>0)
+            {
+                if(snack.body[0].rotation!=270)hear.rotation=90
+            }
+            else hear.rotation=90
         }
         else
             snack.s=1;
@@ -205,28 +243,26 @@ Image{//游戏界面
     function press_D(){
         if(is_autoMove==1)
         {
-
-            if(snack.num==-1? true:hear.rotation!=180)
+            if(snack.body.length>0)
             {
-                hear.rotation=0
+                if(snack.body[0].rotation!=180)hear.rotation=0
             }
+            else hear.rotation=0
         }
         else
             snack.d=1;
     }
     function createBody(x=-1,y=-1,r=-1){//生成身体
-        snack.cent++
         var this_body=c_body.createObject(item)
         snack.body.push(this_body)
         var last_body=snack.body.length>=1?snack.body[snack.body.length-1]:hear
         var re=last_body.rotation*Math.PI/180.0
-        this_body.initialize(snack,hear,2147483600-snack.body.length,r===-1?last_body.rotation:r,x===-1?last_body.x+(-Math.cos(re)*20):x,y===-1?last_body.y+(-Math.sin(re)*20):y,snack.body.length-1)
+        this_body.initialize(item,snack,hear,2047483467-snack.body.length,r===-1?last_body.rotation:r,x===-1?last_body.x+(-Math.cos(re)*20):x,y===-1?last_body.y+(-Math.sin(re)*20):y,snack.body.length-1)
         for(var i=0;i<snack.body.length;i++)
         {
             snack.body[i].resetColor()
             snack.body[i].resetRotation()
         }
-
     }
     Rectangle{//背景
         id:back
@@ -291,6 +327,7 @@ Image{//游戏界面
             timer.running=true
             timer3.running=true
             $doud=true
+            initialize(-1,0,0,0,0,0,0,s)
         }
     }
     Timer{//计时专用计时器
@@ -306,6 +343,8 @@ Image{//游戏界面
                 t+=1
                 tt=t/100
                 time_text.text=tt+"s"
+                lt.text=snack.body.length+1
+                ct.text=snack.body.length+addcent+1
             }
         }
     }
@@ -381,7 +420,7 @@ Image{//游戏界面
     }
     Image {//蛇头
         property int type:0
-        z:2147483646
+        z:2147483466
         x:200
         y:200
         width: 20
@@ -389,6 +428,11 @@ Image{//游戏界面
         visible: true
         id: hear
         source: type==0?"./images/snack_hear.png":"./images/snack_hear"+hear.type+".png"
+        Image{
+            id:hear_
+            anchors.fill: parent
+            source:"./images/snack_hear0.png"
+        }
     }
     Item {//蛇身体
         z:2
@@ -398,7 +442,6 @@ Image{//游戏界面
         y:0
         width: 800
         height: 600
-        property int cent:0
         property int w: 0
         property int a: 0
         property int s: 0
@@ -455,55 +498,71 @@ Image{//游戏界面
                         {
                         case 270:
                             if(canThrough? true:(!isBody(hear.x,hear.y-20))){
-                                body_move(hear.x,hear.y,270)
-                                if(hear.y==0)
-                                    hear.y=580
-                                else
+                                if(hear.y>0)
+                                {
+                                    body_move(hear.x,hear.y,270)
                                     hear.y-=20
+                                }
+                                else if(canCrossBorder)
+                                {
+                                    body_move(hear.x,hear.y,270)
+                                    hear.y=580
+                                }
                             }
                             else if(canDie)
-                                die_l()
+                                die_()
                             hear.rotation=270
-                            canEat=true
                             break
                         case 180:
                             if(canThrough? true:(!isBody(hear.x-20,hear.y))){
-                                body_move(hear.x,hear.y,180)
-                                if(hear.x==0)
-                                    hear.x=780
-                                else
+                                if(hear.x>0)
+                                {
+                                    body_move(hear.x,hear.y,180)
                                     hear.x-=20
+                                }
+                                else if(canCrossBorder)
+                                {
+                                    body_move(hear.x,hear.y,180)
+                                    hear.x=780
+                                }
                             }
                             else if(canDie)
                                 die_()
                             hear.rotation=180
-                            canEat=true
                             break
                         case 90:
                             if((canThrough? true:(!isBody(hear.x,hear.y+20)))){
-                                body_move(hear.x,hear.y,90)
-                                if(hear.y==580)
-                                    hear.y=0
-                                else
+                                if(hear.y<580)
+                                {
+                                    body_move(hear.x,hear.y,90)
                                     hear.y+=20
+                                }
+                                else if(canCrossBorder)
+                                {
+                                    body_move(hear.x,hear.y,90)
+                                    hear.y=0
+                                }
                             }
                             else if(canDie)
                                 die_()
                             hear.rotation=90
-                            canEat=true
                             break
                         case 0:
                             if((canThrough? true:(!isBody(hear.x+20,hear.y)))){
-                                body_move(hear.x,hear.y,0)
-                                if(hear.x==780)
-                                    hear.x=0
-                                else
+                                if(hear.x<780)
+                                {
+                                    body_move(hear.x,hear.y,0)
                                     hear.x+=20
+                                }
+                                else if(canCrossBorder)
+                                {
+                                    body_move(hear.x,hear.y,0)
+                                    hear.x=0
+                                }
                             }
                             else if(canDie)
                                 die_()
                             hear.rotation=0
-                            canEat=true
                             break
                         }
                     }
@@ -519,68 +578,95 @@ Image{//游戏界面
                         {
                         case 0:
                             hear.type=0
-                            if(hear.x<780 && (canThrough? true:(!isBody(hear.x+20,hear.y)))){
-                                hear.x+=20
-                                body_move(hear.x-20,hear.y,0)
+                            if(canThrough? true:(!isBody(hear.x+20,hear.y))){
+                                if(hear.x<780)
+                                {
+                                    hear.x+=20
+                                    body_move(hear.x-20,hear.y,0)
+                                }
+                                else if(canCrossBorder)
+                                {
+                                    body_move(hear.x,hear.y,0)
+                                    hear.x=0
+                                }
                             }
                             else if(snack.body.length>0)
                             {
                                 if(snack.body[0].rotation==180)
                                     hear.type=3
                                 else
-                                f=true
+                                    f=true
                             }
-
                             hear.rotation=0
-                            canEat=true
                             break
                         case 90:
                             hear.type=0
-                            if(hear.y<580 && (canThrough? true:(!isBody(hear.x,hear.y+20)))){
-                                hear.y+=20
-                                body_move(hear.x,hear.y-20,90)
+                            if(canThrough? true:(!isBody(hear.x,hear.y+20))){
+                                if(hear.y<580)
+                                {
+                                    hear.y+=20
+                                    body_move(hear.x,hear.y-20,90)
+                                }
+                                else if(canCrossBorder)
+                                {
+                                    body_move(hear.x,hear.y,90)
+                                    hear.y=0
+                                }
                             }
                             else if(snack.body.length>0)
                             {
                                 if(snack.body[0].rotation==270)
                                     hear.type=3
                                 else
-                                f=true
+                                    f=true
                             }
                             hear.rotation=90
-                            canEat=true
                             break
                         case 180:
                             hear.type=0
-                            if(hear.x>0 && (canThrough? true:(!isBody(hear.x-20,hear.y)))){
-                                hear.x-=20
-                                body_move(hear.x+20,hear.y,180)
+                            if(canThrough? true:(!isBody(hear.x-20,hear.y))){
+                                if(hear.x>0)
+                                {
+                                    body_move(hear.x,hear.y,180)
+                                    hear.x-=20
+                                }
+                                else if(canCrossBorder)
+                                {
+                                    hear.x=780
+                                    body_move(hear.x+20,hear.y,180)
+                                }
                             }
                             else if(snack.body.length>0)
                             {
                                 if(snack.body[0].rotation==0)
                                     hear.type=3
                                 else
-                                f=true
+                                    f=true
                             }
                             hear.rotation=180
-                            canEat=true
                             break
                         case 270:
                             hear.type=0
-                            if(hear.y>0 && (canThrough? true:(!isBody(hear.x,hear.y-20)))){
-                                hear.y-=20
-                                body_move(hear.x,hear.y+20,270)
+                            if(canThrough? true:(!isBody(hear.x,hear.y-20))){
+                                if(hear.y>0)
+                                {
+                                    hear.y-=20
+                                    body_move(hear.x,hear.y+20,270)
+                                }
+                                else if(canCrossBorder)
+                                {
+                                    body_move(hear.x,hear.y,270)
+                                    hear.y=580
+                                }
                             }
                             else if(snack.body.length>0)
                             {
                                 if(snack.body[0].rotation==90)
                                     hear.type=3
                                 else
-                                f=true
+                                    f=true
                             }
                             hear.rotation=270
-                            canEat=true
                         }
                         if(f)
                         {
@@ -592,7 +678,7 @@ Image{//游戏界面
                                 hear.type=2
                         }
                     }
-                    if(hear.x==x0 && hear.y==y0 && canEat)//吃到食物
+                    if(hear.x==x0 && hear.y==y0)//吃到食物
                     {
                         move_ea.play_()
                         switch(im_type)
@@ -637,7 +723,8 @@ Image{//游戏界面
                         default:break
                         }
                         createBody()
-                        if((snack.cent+addcent)>maxcent)
+                        hear_.visible=false
+                        if((snack.body.length+addcent)>maxcent)
                         {
                             file.setSource("./data.d")
                             file.write(snack.cent+addcent)
@@ -650,16 +737,13 @@ Image{//游戏界面
             }
         }
     }
-    Image{//参数面板
+    Rectangle{//参数面板
         id:item_mm
-        source:"./images/back_null.png"
         x:800
         y:0
         width: 100
         height: 600
-        property int type
         Rectangle {//显示分数
-            id:cent_text
             z:10
             x:0
             y:0
@@ -667,15 +751,14 @@ Image{//游戏界面
             height: 40
             color: "#FFFF00"
             Text {
-                id: cent
+                id:ct
                 anchors.centerIn: parent
                 font.pixelSize: 30
                 font.bold: true
-                text: qsTr(""+(snack.cent+addcent))
+                text: snack.body.length+addcent
             }
         }
         Rectangle {//显示长度
-            id:lon_text
             z:10
             x:0
             y:40
@@ -683,15 +766,14 @@ Image{//游戏界面
             height: 40
             color: "#FFFF00"
             Text {
-                id: l_t
+                id: lt
                 anchors.centerIn: parent
                 font.pixelSize: 25
                 font.bold: true
-                text: (snack.body.length+3)+"m"
+                text: snack.body.length
             }
         }
         Rectangle {//显示时间
-            id:time_
             z:10
             x:0
             y:80
@@ -703,7 +785,7 @@ Image{//游戏界面
                 anchors.centerIn: parent
                 font.pixelSize: 25
                 font.bold: true
-                text: timer.tt+"s"
+                text: timer3.tt+"s"
             }
         }
         Rectangle {//显示加速状态
@@ -750,23 +832,23 @@ Image{//游戏界面
             color: {
                 switch(type){
                 case 0:return "#FFD700"
-                case 1:return "#00FFFF"
-                case 2:return "#FFFAFA"
-                case 3:return "#FF0000"
+                case 1:return "#FFFFFF"
+                case 2:return "#FF0000"
+                case 3:return "#bf00ff"
                 }
 
             }
             Text {
                 id: h_t
                 anchors.centerIn: parent
-                font.pixelSize: 20
+                font.pixelSize: 18
                 font.bold: true
                 text: {
                     switch(type){
                     case 0:return $enMode?"Common":"普通模式"
-                    case 1:return $enMode?"High Odds":"高概率模式"
-                    case 2:return $enMode?"Typical":"经典模式"
-                    case 3:return $enMode?"Hard":"困难模式"
+                    case 1:return $enMode?"Typical":"经典模式"
+                    case 2:return $enMode?"High Odds":"高概率模式"
+                    case 3:return $enMode?"Custom":"自定义模式"
                     }
                 }
             }
@@ -894,7 +976,7 @@ Image{//游戏界面
             }
         }
     }
-    Image{//死亡界面
+    Rectangle{//死亡界面
         visible: false
         width: 900
         height:600
@@ -904,37 +986,37 @@ Image{//游戏界面
         opacity: 0
         id:die
         z:2147483647
-        source:"./images/pause.png"
+        color:"#40FFFF00"
         function show(cent,time)
         {
             visible=true
             opacity=1
-            centl=cent
-            t=time
+            centl=snack.body.length+addcent
+            t=timer3.tt
         }
-        Image {
-            x:400
-            y:245
-            width: 100
+        Rectangle {
+            width: $enMode?140:100
             height:110
-            source:"./images/pause.png"
+            x:(back.width-width)/2
+            y:(back.height-height)/2
+            color:"#60FFFF00"
             Text{
-                x:10
+                x:(parent.width-width)/2
                 y:10
                 color:"#FF0000"
                 text:$enMode?"Game Over":"游戏失败"
                 font.pixelSize: 20
             }
             Text{
-                x:10
+                x:(parent.width-width)/2
                 y:40
-                text:($enMode?"Cent:":"分数：")+die.centl
+                text:($enMode?"cent:":"分数：")+die.centl
                 font.pixelSize: 20
             }
             Text{
-                x:10
+                x:(parent.width-width)/2
                 y:70
-                text:($enMode?"Time:":"用时：")+die.t
+                text:($enMode?"time:":"用时：")+die.t
                 font.pixelSize: 20
             }
         }
@@ -1029,6 +1111,11 @@ Image{//游戏界面
             }
         }
     }
+    Text{
+        text: "canDie:"+canDie+"\ncanCrossBorder:"+canCrossBorder+"\nautoMove:"+is_autoMove+"\ndifficuty:"+difficulty+"\ngenerateFoodType:"+generateFoodType
+        visible: $sbInfo
+        z:2147483467
+    }
     Keys.onPressed:(event)=>{
                        if((event.modifiers & Qt.ControlModifier) && event.key === Qt.Key_S)
                        {
@@ -1049,11 +1136,13 @@ Image{//游戏界面
                        }
                        else if(event.key===Qt.Key_Space)
                        {
+                           if(!die.visible)
                            pause_i.enabled=!pause_i.enabled
 
                        }
                        else if(event.key===Qt.Key_Escape)
                        {
+                           if(!die.visible)
                            pause_i.enabled=!pause_i.enabled
 
                        }
@@ -1107,7 +1196,6 @@ Image{//游戏界面
                              {
                                  $through=2147483647
                              }
-
                          }
                          else if(event.key===Qt.Key_F3 &&$control)
                          {
@@ -1116,12 +1204,34 @@ Image{//游戏界面
                              else
                              type++
                              setType(type)
-
                          }
                          else if(event.key===Qt.Key_F4 &&$control)
                          {
+                             $sbInfo=!$sbInfo
+                         }
+                         else if(event.key===Qt.Key_F5 &&$control)
+                         {
                              im.destroy()
                              generate_food()
+                         }
+                         else if(event.key===Qt.Key_F6 &&$control)
+                         {
+                             canDie=!canDie
+                         }
+                         else if(event.key===Qt.Key_F7 &&$control)
+                         {
+                             canCrossBorder=!canCrossBorder
+                         }
+                         else if(event.key===Qt.Key_F8 &&$control)
+                         {
+                             is_autoMove=!is_autoMove
+                         }
+                         else if(event.key===Qt.Key_F9 &&$control)
+                         {
+                             if(generateFoodType==2)
+                             generateFoodType=0
+                             else
+                             generateFoodType+=1
                          }
                      }
 }
